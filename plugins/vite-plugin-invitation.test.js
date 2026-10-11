@@ -4,7 +4,7 @@ import invitation from './vite-plugin-invitation.js';
 
 const config = {
 	site: { url: 'https://example.com/boda/', description: 'Línea 1\nLínea 2' },
-	couple: { partner1: 'ángela', partner2: 'Daniel', joiner: '&' },
+	couple: { partner1: 'ángela', partner2: 'Novio', joiner: '&' },
 	date: '2027-05-15T17:00:00-06:00',
 	ceremony: {
 		venue: 'Parroquia de San José',
@@ -47,8 +47,8 @@ test('in attributes, collapses line breaks and joins lists with commas', () => {
 });
 
 test('derives the names, the initials for the wax seal and the date parts', () => {
-	assert.equal(render('{{ couple.names }}'), 'ángela &amp; Daniel');
-	assert.equal(render('{{ couple.initials.partner1 }}{{ couple.initials.partner2 }}'), 'ÁD');
+	assert.equal(render('{{ couple.names }}'), 'ángela &amp; Novio');
+	assert.equal(render('{{ couple.initials.partner1 }}{{ couple.initials.partner2 }}'), 'ÁN');
 	assert.equal(
 		render('{{ date.day }} {{ date.month }} {{ date.monthShort }} {{ date.year }}'),
 		'15 Mayo May 2027',
@@ -82,7 +82,7 @@ test('links to a Google Calendar event from the ceremony start, lasting calendar
 
 	assert.equal(url.origin + url.pathname, 'https://calendar.google.com/calendar/render');
 	assert.equal(url.searchParams.get('dates'), '20270515T230000Z/20270516T070000Z');
-	assert.equal(url.searchParams.get('text'), 'Boda de ángela & Daniel');
+	assert.equal(url.searchParams.get('text'), 'Boda de ángela & Novio');
 	assert.equal(url.searchParams.get('location'), 'Parroquia de San José');
 	assert.match(url.searchParams.get('details'), /\nRecepción: Jardín Las Flores, 7:30 pm\n/);
 });
@@ -107,7 +107,7 @@ test('writes an iCalendar file with escaped text and lines of at most 75 bytes',
 		'lines folded at 75 bytes',
 	);
 	assert.match(unfolded, /\r\nDTSTART:20270515T230000Z\r\nDTEND:20270516T070000Z\r\n/);
-	assert.match(unfolded, /\r\nSUMMARY:Boda de ángela & Daniel\r\n/);
+	assert.match(unfolded, /\r\nSUMMARY:Boda de ángela & Novio\r\n/);
 	assert.match(
 		unfolded,
 		/\r\nDESCRIPTION:Ceremonia: Parroquia de San José\\, 5:00 pm\\nhttps:\/\/maps\.example\/a\\n/,

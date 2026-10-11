@@ -14,7 +14,7 @@ const DEMO_DELAY_MS = 800;
 // Strips anything that isn't a digit or a leading "+", then groups the
 // local 10 digits as XXX XXX XX XX. If a country code is present
 // (digits beyond the last 10, only when the value starts with "+"),
-// it's kept separate: "+52 555 000 00 00".
+// it's kept separate: "+52 000 000 00 00".
 function formatPhoneInput(raw) {
 	const hasPlus = raw.trim().startsWith('+');
 	const digits = raw.replace(/\D/g, '');

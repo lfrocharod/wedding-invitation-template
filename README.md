@@ -12,9 +12,9 @@ The site copy is in Spanish; the code and documentation are in English.
 
 Phone viewport (390px wide) with the placeholder content.
 
-|                                                                            The envelope, with the guest's name from the link                                                                             |                                                                          Opening it                                                                           |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| <img src="docs/screenshots/envelope.jpg" width="260" alt="Envelope sealed with a sage wax seal showing the initials V and D, addressed to Familia Pérez, under the names Valeria & Daniel and the date"> | <img src="docs/screenshots/envelope-opening.jpg" width="260" alt="The opened envelope with its patterned liner and a card reading ¡Nos casamos! sliding out"> |
+|                                                                           The envelope, with the guest's name from the link                                                                           |                                                                          Opening it                                                                           |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| <img src="docs/screenshots/envelope.jpg" width="260" alt="Envelope sealed with a sage wax seal showing the initials N and N, addressed to Familia Pérez, under the names Novia & Novio and the date"> | <img src="docs/screenshots/envelope-opening.jpg" width="260" alt="The opened envelope with its patterned liner and a card reading ¡Nos casamos! sliding out"> |
 
 |                                                                    Hero and ceremony                                                                     |                                                                            Dress code, gifts and countdown                                                                             |                                                          RSVP                                                           |
 | :------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------: |
@@ -29,7 +29,7 @@ Phone viewport (390px wide) with the placeholder content.
 - **Scroll-reveal animations** with `IntersectionObserver`, starting once the envelope is open. Blocks that come into view together appear one after another. They are opt-in: content only starts hidden when the visitor allows motion (`prefers-reduced-motion: no-preference`) and JavaScript is running, so it's never stuck invisible. With reduced motion, the envelope simply fades away.
 - **Live countdown** to the ceremony, read from the config, replaced by "¡Llegó el gran día!" once the day comes.
 - **Add to calendar:** under the countdown, a Google Calendar link and an `.ics` file for iPhone and Outlook, both made from the config at build time, with the two venues and the invitation link in the event.
-- **RSVP form** with Sí/No toggles per event, phone formatting (`+52 555 000 00 00`), validation messages in the form itself rather than pop-up alerts, a honeypot field against bots and two backends: a network-free **demo** mode and a **Google Apps Script** mode that writes each answer to a Google Sheet and can send it to the couple by email or WhatsApp.
+- **RSVP form** with Sí/No toggles per event, phone formatting (`+52 000 000 00 00`), validation messages in the form itself rather than pop-up alerts, a honeypot field against bots and two backends: a network-free **demo** mode and a **Google Apps Script** mode that writes each answer to a Google Sheet and can send it to the couple by email or WhatsApp.
 - **Link previews that work on WhatsApp:** the page title and Open Graph tags are in the static HTML, generated from the config by a small Vite plugin. Link-preview crawlers don't run JavaScript.
 - **One config file:** `src/invitation.config.js`. A placeholder without a matching value fails the build instead of shipping `{{ … }}` to guests.
 - **Accessible:** a real `<h1>` and section headings for screen readers (the visible titles are drawn into the artwork), labelled form controls and toggle groups, the invitation kept out of reach (`inert`) behind the closed envelope, focus moved to the invitation once it opens and to the confirmation message after sending, and `autocomplete` hints.
@@ -54,7 +54,7 @@ npm run dev # then open the URL Vite prints (it includes the base path from site
 | `site.url`                                            | Public URL of the deployed site, without a trailing slash. Used for `og:url` and for the absolute `og:image` URL that WhatsApp needs. Its path is also the base the site is built for, e.g. `/<repo>/` on GitHub Pages. |
 | `site.description`                                    | Meta description and link-preview text.                                                                                                                                                                                 |
 | `site.ogImage`, `site.ogImageAlt`                     | Link-preview image (1200×630) and its alt text.                                                                                                                                                                         |
-| `couple.partner1`, `couple.partner2`, `couple.joiner` | Names, joined as "Valeria & Daniel" in the page title, link preview and header.                                                                                                                                         |
+| `couple.partner1`, `couple.partner2`, `couple.joiner` | Names, joined as "Novia & Novio" in the page title, link preview and header.                                                                                                                                            |
 | `couple.photo`                                        | Photo next to the welcome text (586×612 frame; other shapes are cropped, not stretched).                                                                                                                                |
 | `date`                                                | Ceremony start in ISO 8601 with the venue's UTC offset, e.g. `2027-05-15T17:00:00-06:00`. Drives the countdown and every displayed date.                                                                                |
 | `intro`                                               | Welcome text next to the photo.                                                                                                                                                                                         |
@@ -99,7 +99,7 @@ To make the links for a whole guest list, put the names in column A of a Google 
 ="https://lfrocharod.github.io/wedding-invitation-template/?para="&ENCODEURL(A2)
 ```
 
-With phone numbers in column C (country code included, digits only, e.g. `525512345678`), this in D2 makes a link that opens WhatsApp with the message ready to send (in a sheet set to a locale with a decimal comma, such as Spain's, separate the arguments with `;`):
+With phone numbers in column C (country code included, digits only, e.g. `520000000000`), this in D2 makes a link that opens WhatsApp with the message ready to send (in a sheet set to a locale with a decimal comma, such as Spain's, separate the arguments with `;`):
 
 ```text
 =HYPERLINK("https://wa.me/"&C2&"?text="&ENCODEURL("¡Hola! Con mucho cariño te compartimos nuestra invitación: "&B2), "Enviar")
@@ -162,7 +162,7 @@ Instead of checking the sheet, the couple can get each answer by email, by Whats
     | Property           | Value                                                                      |
     | ------------------ | -------------------------------------------------------------------------- |
     | `NOTIFY_EMAIL`     | One or more email addresses, separated by commas                           |
-    | `CALLMEBOT_PHONE`  | The WhatsApp number to notify, with its country code, e.g. `+525512345678` |
+    | `CALLMEBOT_PHONE`  | The WhatsApp number to notify, with its country code, e.g. `+520000000000` |
     | `CALLMEBOT_APIKEY` | That number's CallMeBot API key (see below)                                |
 
 3. Back in the editor, open `Notifications.gs`, select `sendTestNotification` in the toolbar and click **Run**. Authorize the new permissions (sending email as you and connecting to an external service), and a test answer arrives on each channel. If one doesn't, **Executions** shows why.

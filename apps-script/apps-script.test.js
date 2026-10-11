@@ -5,11 +5,11 @@ import vm from 'node:vm';
 
 const HEADERS = ['Fecha', 'Nombre', 'Teléfono', 'Ceremonia', 'Recepción', 'Invitación'];
 const ANSWER = {
-	nombre: 'Ana López',
-	telefono: '+52 555 000 00 00',
+	nombre: 'Invitada de Ejemplo',
+	telefono: '+52 000 000 00 00',
 	ceremonia: 'Sí',
 	recepcion: 'No',
-	invitacion: 'Familia López',
+	invitacion: 'Familia Ejemplo',
 };
 
 // Runs the Apps Script files in a sandbox, with fakes for the Google services they use.
@@ -82,11 +82,11 @@ test('appends one row per answer, with the invitation it came from', () => {
 	assert.deepEqual(post(ANSWER), { ok: true });
 	assert.deepEqual(rows[0], HEADERS);
 	assert.deepEqual(rows[1].slice(1), [
-		'Ana López',
-		"'+52 555 000 00 00",
+		'Invitada de Ejemplo',
+		"'+52 000 000 00 00",
 		'Sí',
 		'No',
-		'Familia López',
+		'Familia Ejemplo',
 	]);
 });
 
@@ -128,7 +128,7 @@ test('stores nothing for honeypot submissions, incomplete answers or bad JSON', 
 
 const BOTH_CHANNELS = {
 	NOTIFY_EMAIL: 'novia@example.com, novio@example.com',
-	CALLMEBOT_PHONE: '+52 55 1234 5678',
+	CALLMEBOT_PHONE: '+52 000 000 0000',
 	CALLMEBOT_APIKEY: '123456',
 };
 
@@ -148,9 +148,9 @@ test('emails each answer to NOTIFY_EMAIL', () => {
 	post(ANSWER);
 	assert.equal(sent.emails.length, 1);
 	assert.equal(sent.emails[0].to, 'novia@example.com, novio@example.com');
-	assert.equal(sent.emails[0].subject, 'Nueva respuesta: Ana López');
-	assert.match(sent.emails[0].body, /Ceremonia: Sí\nRecepción: No\nTeléfono: \+52 555 000 00 00/);
-	assert.match(sent.emails[0].body, /Invitación: Familia López/);
+	assert.equal(sent.emails[0].subject, 'Nueva respuesta: Invitada de Ejemplo');
+	assert.match(sent.emails[0].body, /Ceremonia: Sí\nRecepción: No\nTeléfono: \+52 000 000 00 00/);
+	assert.match(sent.emails[0].body, /Invitación: Familia Ejemplo/);
 	assert.match(sent.emails[0].body, /docs\.google\.com\/spreadsheets/);
 	assert.deepEqual(sent.urls, []);
 });
@@ -158,7 +158,7 @@ test('emails each answer to NOTIFY_EMAIL', () => {
 test('sends each answer by WhatsApp through CallMeBot', () => {
 	const { sent, post } = load({
 		files: ['Code.gs', 'Notifications.gs'],
-		properties: { CALLMEBOT_PHONE: ' +52 55 1234 5678 ', CALLMEBOT_APIKEY: '123456' },
+		properties: { CALLMEBOT_PHONE: ' +52 000 000 0000 ', CALLMEBOT_APIKEY: '123456' },
 	});
 
 	post({ ...ANSWER, invitacion: '' });
@@ -166,11 +166,11 @@ test('sends each answer by WhatsApp through CallMeBot', () => {
 
 	const url = sent.urls[0];
 	assert.equal(url.origin + url.pathname, 'https://api.callmebot.com/whatsapp.php');
-	assert.equal(url.searchParams.get('phone'), '+52 55 1234 5678');
+	assert.equal(url.searchParams.get('phone'), '+52 000 000 0000');
 	assert.equal(url.searchParams.get('apikey'), '123456');
 	assert.equal(
 		url.searchParams.get('text'),
-		'💌 *Ana López* respondió a la invitación\nCeremonia: Sí\nRecepción: No\nTeléfono: +52 555 000 00 00',
+		'💌 *Invitada de Ejemplo* respondió a la invitación\nCeremonia: Sí\nRecepción: No\nTeléfono: +52 000 000 00 00',
 	);
 	assert.deepEqual(sent.emails, []);
 });

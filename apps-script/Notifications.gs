@@ -86,7 +86,7 @@ function notifyRsvp(answer) {
 function sendTestNotification() {
 	const channels = notifyRsvp({
 		nombre: 'Invitado de prueba',
-		telefono: '+52 555 000 00 00',
+		telefono: '+52 000 000 00 00',
 		ceremonia: 'Sí',
 		recepcion: 'Sí',
 		invitacion: 'Familia de prueba',

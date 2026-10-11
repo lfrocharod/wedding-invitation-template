@@ -20,8 +20,8 @@ export default {
 	},
 
 	couple: {
-		partner1: 'Valeria',
-		partner2: 'Daniel',
+		partner1: 'Novia',
+		partner2: 'Novio',
 		// Joins the two names in the page title, link preview and header ("&" or "y").
 		joiner: '&',
 		photo: '/assets/images/photo-placeholder.svg',
