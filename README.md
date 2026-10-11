@@ -35,7 +35,7 @@ Phone viewport (390px wide) with the placeholder content.
 - **Private by default:** the page asks search engines not to list it (it shows the couple's names, the venues and their bank details), so it's only reached through the link the couple shares; link previews work the same. The fonts are served with the site instead of by Google Fonts, so opening the invitation sends nothing to third parties, and links out (maps, calendar, gift registries) don't pass on the page address, personalized guest name included.
 - **One config file:** `src/invitation.config.js`. A placeholder without a matching value fails the build instead of shipping `{{ … }}` to guests.
 - **Accessible:** a real `<h1>` and section headings for screen readers (the visible titles are drawn into the artwork), labelled form controls and toggle groups, the invitation kept out of reach (`inert`) behind the closed envelope, focus moved to the invitation once it opens and to the confirmation message after sending, and `autocomplete` hints.
-- **Lightweight:** no framework, about 7 KB of JavaScript (3 KB gzipped), illustrations compressed to 256-color lossless WebP (the image folder went from 3.4 MB to about 0.8 MB) and a 0.8 MB demo song.
+- **Lightweight:** no framework, about 10 KB of JavaScript (4 KB gzipped), the two fonts in about 110 KB, illustrations compressed to 256-color lossless WebP (the image folder went from 3.4 MB to about 0.8 MB) and a 0.8 MB demo song.
 - **Tooling:** ESLint, Stylelint, Prettier, unit tests for the build plugin and the Apps Script backend on Node's built-in test runner, a Husky + lint-staged pre-commit hook and GitHub Actions CI that deploys `main` to GitHub Pages.
 
 ## Quick start
@@ -234,7 +234,7 @@ A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitH
 ├── public/                         # Copied as-is: favicon, images and the song
 ├── src/
 │   ├── invitation.config.js        # All of the invitation content
-│   ├── scripts/                    # main.js (entry), envelope.js, music.js, reveal.js, countdown.js, rsvp.js
+│   ├── scripts/                    # main.js (entry), envelope.js, guest.js, music.js, reveal.js, countdown.js, rsvp.js
 │   └── styles/                     # main.scss, and _envelope.scss for the envelope
 ├── .env.example                    # RSVP mode and endpoint
 ├── index.html                      # Page template with {{ placeholders }}
