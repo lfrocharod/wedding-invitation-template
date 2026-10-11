@@ -224,6 +224,13 @@
 		}
 	}
 
+	// Scaled and centered by src/scripts/envelope.js, so that wide initials (M, W) and
+	// swashes that reach past their letter stay on the wax
+	&__monogram {
+		font-size: calc(1em * var(--monogram-scale, 1));
+		translate: calc(1em * var(--monogram-shift, 0)) 0;
+	}
+
 	&__seal-joiner {
 		margin: 0 0.02em;
 		font-size: 0.65em;
