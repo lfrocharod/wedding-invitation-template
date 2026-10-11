@@ -30,7 +30,7 @@ Phone viewport (390px wide) with the placeholder content.
 - **Live countdown** to the ceremony, read from the config, replaced by "¡Llegó el gran día!" once the day comes.
 - **Gift registries:** buttons for online registries (Liverpool, Amazon…) under the gift details, from a list in the config.
 - **Add to calendar:** under the countdown, a Google Calendar link and an `.ics` file for iPhone and Outlook, both made from the config at build time, with the two venues and the invitation link in the event.
-- **RSVP form** with how many people the answer is for, Sí/No toggles per event, an optional message to the couple, a deadline after which the form closes by itself, a "Ya recibimos tu respuesta" note for guests who come back after answering (remembered in their browser, per invitation link), phone formatting (`+52 000 000 00 00`), validation messages in the form itself rather than pop-up alerts, a honeypot field against bots and two backends: a network-free **demo** mode and a **Google Apps Script** mode that writes each answer to a Google Sheet and can send it to the couple by email or WhatsApp.
+- **RSVP form** with how many people the answer is for, Sí/No toggles per event, an optional message to the couple, a deadline after which the form closes by itself, a "Ya recibimos tu respuesta" note for guests who come back after answering (remembered in their browser, per invitation link), phone formatting (`+52 000 000 00 00`), validation messages in the form itself rather than pop-up alerts, a honeypot field against bots and two backends: a network-free **demo** mode and a **Google Apps Script** mode that writes each answer to a Google Sheet and can send it to the couple by email, WhatsApp or Telegram.
 - **Link previews that work on WhatsApp:** the page title and Open Graph tags are in the static HTML, generated from the config by a small Vite plugin. Link-preview crawlers don't run JavaScript.
 - **Private by default:** the page asks search engines not to list it (it shows the couple's names, the venues and their bank details), so it's only reached through the link the couple shares; link previews work the same. The fonts are served with the site instead of by Google Fonts, so opening the invitation sends nothing to third parties, and links out (maps, calendar, gift registries) don't pass on the page address, personalized guest name included.
 - **One config file:** `src/invitation.config.js`. A placeholder without a matching value fails the build instead of shipping `{{ … }}` to guests.
@@ -169,25 +169,47 @@ Good to know:
 - `VITE_*` variables are inlined into the public JavaScript bundle. The endpoint isn't a secret; keeping it out of the repo keeps the template generic and away from scrapers.
 - "Anyone" access is what lets the browser read the script's reply. The script validates every field, drops honeypot submissions, uses a lock so simultaneous answers don't collide, and stores values starting with `=`, `+`, `-` or `@` as plain text so Sheets never evaluates them as formulas (phone numbers like `+52 …` included).
 
-### Notifications by email or WhatsApp (optional)
+### Notifications by email, WhatsApp or Telegram (optional)
 
-Instead of checking the sheet, the couple can get each answer by email, by WhatsApp, or both:
+Instead of checking the sheet, the couple can get each answer by email, WhatsApp, Telegram, or any mix of them:
 
 1. In the Apps Script project, add a script file (**+ → Script**) named `Notifications` and replace its contents with [`apps-script/Notifications.gs`](apps-script/Notifications.gs).
-2. Open **Project Settings** (the gear icon) and, under **Script properties**, add the ones for the channels you want:
+2. Open **Project Settings** (the gear icon) and, under **Script properties**, add the ones for the channels you want (each channel is set up below):
 
-    | Property           | Value                                                                      |
-    | ------------------ | -------------------------------------------------------------------------- |
-    | `NOTIFY_EMAIL`     | One or more email addresses, separated by commas                           |
-    | `CALLMEBOT_PHONE`  | The WhatsApp number to notify, with its country code, e.g. `+520000000000` |
-    | `CALLMEBOT_APIKEY` | That number's CallMeBot API key (see below)                                |
+    | Property            | Value                                                                                 |
+    | ------------------- | ------------------------------------------------------------------------------------- |
+    | `NOTIFY_EMAIL`      | One or more email addresses, separated by commas                                      |
+    | `WHATSAPP_TOKEN`    | Access token for the WhatsApp Business Platform                                       |
+    | `WHATSAPP_PHONE_ID` | ID of the WhatsApp number the messages come from                                      |
+    | `WHATSAPP_TO`       | Numbers to notify, with their country code, e.g. `+520000000000`, separated by commas |
+    | `WHATSAPP_TEMPLATE` | Name of the approved message template, e.g. `nueva_respuesta`                         |
+    | `WHATSAPP_LANGUAGE` | The template's language code (optional, `es_MX` by default)                           |
+    | `TELEGRAM_TOKEN`    | The token @BotFather gives your bot                                                   |
+    | `TELEGRAM_CHAT_ID`  | Chats to notify, separated by commas                                                  |
 
 3. Back in the editor, open `Notifications.gs`, select `sendTestNotification` in the toolbar and click **Run**. Authorize the new permissions (sending email as you and connecting to an external service), and a test answer arrives on each channel. If one doesn't, **Executions** shows why.
 4. Publish a new version: **Deploy → Manage deployments → Edit → Version: New version**.
 
-Emails come from the Google account that owns the script, which can reach 100 recipients a day on a free account (two addresses use two per answer). WhatsApp messages go through [CallMeBot](https://www.callmebot.com/blog/free-api-whatsapp-messages/), a free service for personal use that isn't part of WhatsApp: whoever gets the messages adds the CallMeBot number shown on that page to their contacts and sends it "I allow callmebot to send me messages" from WhatsApp; the reply contains their API key. CallMeBot sometimes pauses new activations when it's at capacity, so email is the dependable channel.
+A notification that fails is only logged: the answer is saved in the sheet first, either way. Without `Notifications.gs` the script sends nothing and never asks for those permissions. Tokens stay in the script's properties, out of the repository and the site.
 
-A notification that fails is only logged: the answer is saved in the sheet first, either way. Without `Notifications.gs` the script sends nothing and never asks for those permissions, and the CallMeBot key stays in the script's properties, out of the repository and the site.
+**Email** comes from the Google account that owns the script: free, and up to 100 recipients a day on a free account (two addresses use two per answer).
+
+**WhatsApp** goes through the official [WhatsApp Business Platform](https://developers.facebook.com/documentation/business-messaging/whatsapp/) (Meta's Cloud API). Messages a business starts must use a template Meta has approved, and Meta charges a small fee for each one delivered, by country and category ([pricing](https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing)). Setup, once per wedding:
+
+1. In [Meta for Developers](https://developers.facebook.com/apps), create an app of the **Business** type and add **WhatsApp** to it. Its **API Setup** page has a test number to start with, the **Phone number ID** for `WHATSAPP_PHONE_ID`, and a list of recipient numbers you can message during testing (each one confirms with a code). For the wedding itself, add the number that should send the messages.
+2. In WhatsApp Manager, create a message template in the **Utility** category, in Spanish (Mexico), named for example `nueva_respuesta`, with this body (Meta asks for a sample value for each variable), and wait for its approval:
+
+    ```text
+    Nueva respuesta a la invitación de boda: {{1}} respondió por {{2}}. Ceremonia: {{3}}. Recepción: {{4}}. Teléfono: {{5}}. Notas: {{6}}. Puedes ver todas las respuestas en la hoja de cálculo.
+    ```
+
+    The script fills in, in this order: the guest's name, the number of people ("2 personas"), the two Sí/No answers, the phone, and the invitation and message ("—" when there are none). Change the wording if you like, keeping the six variables in that order.
+
+3. The token on the API Setup page expires within a day. For one that lasts, open **Business settings → Users → System users**, add a system user, give it the app and the WhatsApp account, and generate a token with the `whatsapp_business_messaging` permission.
+
+**Telegram** is free and instant, for couples who use it: in Telegram, send `/newbot` to [@BotFather](https://t.me/BotFather) and keep the token it replies with. Each person who should get the messages sends `/start` to the new bot. Then put the token in `TELEGRAM_TOKEN`, run `findTelegramChats` from the editor (it lists the chats that wrote to the bot in the last 24 hours, with their IDs) and copy the IDs into `TELEGRAM_CHAT_ID`.
+
+Free WhatsApp gateways such as CallMeBot aren't used: CallMeBot's API is for personal use only, so it doesn't suit a site made for clients, and in October 2026 it wasn't taking new users.
 
 ### Spam protection
 
@@ -226,7 +248,7 @@ A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitH
 .
 ├── apps-script/
 │   ├── Code.gs                     # RSVP backend (Google Apps Script web app)
-│   ├── Notifications.gs            # Optional: each answer by email and/or WhatsApp
+│   ├── Notifications.gs            # Optional: each answer by email, WhatsApp and/or Telegram
 │   └── apps-script.test.js         # Runs both against fake Google services
 ├── docs/screenshots/               # README screenshots
 ├── plugins/
