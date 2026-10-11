@@ -324,6 +324,21 @@
 				</div>
 				<!-- Replaces the countdown once the date arrives -->
 				<p class="countdown__done" id="cd-done" hidden>¡Llegó el gran día!</p>
+
+				<!-- The event comes from the config (calendar.hours); hidden after the date -->
+				<p class="countdown__calendar" id="cd-calendar">
+					<span class="countdown__calendar-label">Agrégalo a tu calendario</span>
+					<a
+						class="countdown__calendar-link"
+						href="{{ calendar.google }}"
+						target="_blank"
+						rel="noopener"
+						>Google Calendar</a
+					>
+					<a class="countdown__calendar-link" href="{{ calendar.ics }}"
+						>iPhone / Outlook</a
+					>
+				</p>
 			</section>
 
 			<!-- Confirmación: RSVP form -->

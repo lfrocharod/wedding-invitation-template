@@ -46,6 +46,14 @@ export default {
 		mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Sal%C3%B3n+de+Ejemplo',
 	},
 
+	// "Agregar al calendario" under the countdown: a Google Calendar link and an .ics file
+	// (iPhone, Outlook) for one event that starts at `date`, at the ceremony venue, with
+	// both venues and the invitation link in its description.
+	calendar: {
+		// How long the celebration lasts, in hours.
+		hours: 8,
+	},
+
 	dressCode: {
 		// Drawn into dresscode.webp; repeated here as text for screen readers.
 		style: 'Etiqueta rigurosa',
