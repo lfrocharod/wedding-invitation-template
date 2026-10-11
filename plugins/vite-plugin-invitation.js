@@ -80,7 +80,12 @@ function initial(name) {
 // Values derived from the config, so index.html can stay free of logic.
 function buildContext(config) {
 	const { partner1, partner2, joiner } = config.couple;
-	const site = { ...config.site, url: config.site.url.replace(/\/+$/, '') };
+	const site = {
+		...config.site,
+		url: config.site.url.replace(/\/+$/, ''),
+		// Out of search results unless the config says otherwise (link previews work either way)
+		robots: config.site.searchable === true ? 'index, follow' : 'noindex, nofollow',
+	};
 	const names = `${partner1} ${joiner} ${partner2}`;
 	const event = calendarEvent(config, site.url, names);
 

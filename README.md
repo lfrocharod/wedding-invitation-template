@@ -31,6 +31,7 @@ Phone viewport (390px wide) with the placeholder content.
 - **Add to calendar:** under the countdown, a Google Calendar link and an `.ics` file for iPhone and Outlook, both made from the config at build time, with the two venues and the invitation link in the event.
 - **RSVP form** with Sí/No toggles per event, phone formatting (`+52 000 000 00 00`), validation messages in the form itself rather than pop-up alerts, a honeypot field against bots and two backends: a network-free **demo** mode and a **Google Apps Script** mode that writes each answer to a Google Sheet and can send it to the couple by email or WhatsApp.
 - **Link previews that work on WhatsApp:** the page title and Open Graph tags are in the static HTML, generated from the config by a small Vite plugin. Link-preview crawlers don't run JavaScript.
+- **Private by default:** the page asks search engines not to list it (it shows the couple's names, the venues and their bank details), so it's only reached through the link the couple shares; link previews work the same. The fonts are served with the site instead of by Google Fonts, so opening the invitation sends nothing to third parties, and links out (maps, calendar, gift registries) don't pass on the page address, personalized guest name included.
 - **One config file:** `src/invitation.config.js`. A placeholder without a matching value fails the build instead of shipping `{{ … }}` to guests.
 - **Accessible:** a real `<h1>` and section headings for screen readers (the visible titles are drawn into the artwork), labelled form controls and toggle groups, the invitation kept out of reach (`inert`) behind the closed envelope, focus moved to the invitation once it opens and to the confirmation message after sending, and `autocomplete` hints.
 - **Lightweight:** no framework, about 7 KB of JavaScript (3 KB gzipped), illustrations compressed to 256-color lossless WebP (the image folder went from 3.4 MB to about 0.8 MB) and a 0.8 MB demo song.
@@ -54,6 +55,7 @@ npm run dev # then open the URL Vite prints (it includes the base path from site
 | `site.url`                                            | Public URL of the deployed site, without a trailing slash. Used for `og:url` and for the absolute `og:image` URL that WhatsApp needs. Its path is also the base the site is built for, e.g. `/<repo>/` on GitHub Pages. |
 | `site.description`                                    | Meta description and link-preview text.                                                                                                                                                                                 |
 | `site.ogImage`, `site.ogImageAlt`                     | Link-preview image (1200×630) and its alt text.                                                                                                                                                                         |
+| `site.searchable`                                     | `false` (default) asks search engines not to list the site; `true` lets them. Link previews work either way.                                                                                                            |
 | `couple.partner1`, `couple.partner2`, `couple.joiner` | Names, joined as "Novia & Novio" in the page title, link preview and header.                                                                                                                                            |
 | `couple.photo`                                        | Photo next to the welcome text (586×612 frame; other shapes are cropped, not stretched).                                                                                                                                |
 | `date`                                                | Ceremony start in ISO 8601 with the venue's UTC offset, e.g. `2027-05-15T17:00:00-06:00`. Drives the countdown and every displayed date.                                                                                |
@@ -197,6 +199,7 @@ A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitH
 - [Vite](https://vite.dev) 8, with a custom `transformIndexHtml` plugin
 - Vanilla JavaScript (ES modules), no framework
 - SCSS (Dart Sass) with BEM naming and container query units
+- Caveat and Pinyon Script, self-hosted through [Fontsource](https://fontsource.org)
 - Google Apps Script and Google Sheets for RSVPs
 - ESLint, Stylelint (`stylelint-config-standard-scss`) and Prettier
 - Node's built-in test runner (`node --test`)

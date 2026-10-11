@@ -17,6 +17,10 @@ export default {
 		description: 'Acompáñanos a celebrar esta nueva etapa.',
 		ogImage: '/assets/images/og-image.jpg',
 		ogImageAlt: 'Ilustración de un auto de recién casados con el texto «¡Vámonos a celebrar!»',
+		// Whether search engines may list the site. The page has the couple's names, the
+		// venues and bank details, so it's off by default; guests get it by link anyway, and
+		// link previews (WhatsApp, Facebook) work either way.
+		searchable: false,
 	},
 
 	couple: {
