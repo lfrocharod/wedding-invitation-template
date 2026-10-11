@@ -1,3 +1,5 @@
+import { guestName } from './guest.js';
+
 // ---- RSVP form ----
 // VITE_RSVP_MODE picks where answers go (checked at build time in vite.config.js):
 //   demo         default. No network call: success is simulated, so a public demo
@@ -179,6 +181,9 @@ export function initRsvp() {
 			telefono,
 			ceremonia: attendance.ceremonia,
 			recepcion: attendance.recepcion,
+			// The guest name from a personalized link, so the couple can tell which
+			// invitation the answer is for ('' without one).
+			invitacion: guestName(),
 		};
 
 		const submitLabel = submitButton.textContent;

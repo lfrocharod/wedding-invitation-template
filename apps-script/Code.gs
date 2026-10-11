@@ -3,13 +3,14 @@
  *
  * Bound to a Google Sheet (Extensions > Apps Script) and deployed as a web app, it
  * receives the RSVP form as JSON and appends one row per answer to the "RSVP" tab,
- * creating the tab and its header row on first use. Setup steps are in README.md.
+ * creating the tab and its header row on first use (a tab made by an older version
+ * gets the headers of the columns added since). Setup steps are in README.md.
  */
 
 /* exported doGet, doPost */
 
 const SHEET_NAME = 'RSVP';
-const HEADERS = ['Fecha', 'Nombre', 'Teléfono', 'Ceremonia', 'Recepción'];
+const HEADERS = ['Fecha', 'Nombre', 'Teléfono', 'Ceremonia', 'Recepción', 'Invitación'];
 const ANSWERS = ['Sí', 'No'];
 const MAX_LENGTH = 100;
 
@@ -26,17 +27,27 @@ function doPost(e) {
 		return respond({ ok: true });
 	}
 
-	const row = [
-		new Date(),
-		clean(data.nombre),
-		clean(data.telefono),
-		ANSWERS.includes(data.ceremonia) ? data.ceremonia : '',
-		ANSWERS.includes(data.recepcion) ? data.recepcion : '',
-	];
+	const answer = {
+		nombre: clean(data.nombre),
+		telefono: clean(data.telefono),
+		ceremonia: ANSWERS.includes(data.ceremonia) ? data.ceremonia : '',
+		recepcion: ANSWERS.includes(data.recepcion) ? data.recepcion : '',
+		// The guest name from a personalized link (?para=), when the guest opened one.
+		invitacion: clean(data.invitacion),
+	};
 
-	if (row.slice(1).some((value) => !value)) {
+	if (!answer.nombre || !answer.telefono || !answer.ceremonia || !answer.recepcion) {
 		return respond({ ok: false, error: 'missing-fields' });
 	}
+
+	const row = [
+		new Date(),
+		asText(answer.nombre),
+		asText(answer.telefono),
+		answer.ceremonia,
+		answer.recepcion,
+		asText(answer.invitacion),
+	];
 
 	// Serializes concurrent submissions so rows never overwrite each other.
 	const lock = LockService.getScriptLock();
@@ -72,22 +83,31 @@ function parseBody(e) {
 function getSheet() {
 	const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
 	const sheet = spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME);
+	const columns = sheet.getLastColumn();
 
-	if (sheet.getLastRow() === 0) {
-		sheet.appendRow(HEADERS);
+	// Writes the header row on first use, or the headers a tab made by an older version
+	// of this script is missing.
+	if (columns < HEADERS.length) {
+		sheet
+			.getRange(1, columns + 1, 1, HEADERS.length - columns)
+			.setValues([HEADERS.slice(columns)]);
 		sheet.setFrozenRows(1);
 	}
 
 	return sheet;
 }
 
-// Trims and caps guest input. Sheets would evaluate values starting with = + - @ as
-// formulas (phone numbers like "+52 …" included), so those are stored as plain text.
+// Trims and caps guest input.
 function clean(value) {
-	const text = String(value == null ? '' : value)
+	return String(value == null ? '' : value)
 		.trim()
 		.slice(0, MAX_LENGTH);
-	return /^[=+\-@]/.test(text) ? `'${text}` : text;
+}
+
+// Sheets would evaluate values starting with = + - @ as formulas (phone numbers like
+// "+52 …" included), so those are stored as plain text.
+function asText(value) {
+	return /^[=+\-@]/.test(value) ? `'${value}` : value;
 }
 
 function respond(body) {
