@@ -165,6 +165,7 @@ After editing the script, publish the change with **Deploy → Manage deployment
 
 Good to know:
 
+- When you authorize the script, Google warns that it "hasn't verified this app". It says that about any personal script, and the developer it names is you: click **Advanced → Go to … (unsafe)**. Then tick every permission it lists: leave one out and the script asks again on its next run.
 - `VITE_*` variables are inlined into the public JavaScript bundle. The endpoint isn't a secret; keeping it out of the repo keeps the template generic and away from scrapers.
 - "Anyone" access is what lets the browser read the script's reply. The script validates every field, drops honeypot submissions, uses a lock so simultaneous answers don't collide, and stores values starting with `=`, `+`, `-` or `@` as plain text so Sheets never evaluates them as formulas (phone numbers like `+52 …` included).
 
