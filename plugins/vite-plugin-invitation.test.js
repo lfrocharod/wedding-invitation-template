@@ -60,6 +60,16 @@ test('takes the calendar date at the venue, whatever the time zone of the build'
 	assert.equal(render('{{ date.day }}', { date: '2027-05-15T23:30:00-06:00' }), '15');
 });
 
+test('keeps the site out of search results unless site.searchable is true', () => {
+	const robots = '<meta name="robots" content="{{ site.robots }}" />';
+
+	assert.equal(render(robots), '<meta name="robots" content="noindex, nofollow" />');
+	assert.equal(
+		render(robots, { site: { ...config.site, searchable: true } }),
+		'<meta name="robots" content="index, follow" />',
+	);
+});
+
 test('drops the trailing slash from site.url', () => {
 	assert.equal(render('{{ site.url }}/'), 'https://example.com/boda/');
 });

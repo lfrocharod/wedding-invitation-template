@@ -1,3 +1,7 @@
+// The fonts are served with the site rather than by Google Fonts: no request to another
+// company's servers when a guest opens the invitation.
+import '@fontsource-variable/caveat';
+import '@fontsource/pinyon-script';
 import '../styles/main.scss';
 import { initEnvelope } from './envelope.js';
 import { initMusic, playMusic } from './music.js';

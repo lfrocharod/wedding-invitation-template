@@ -44,5 +44,9 @@
 		"*.{html,json,md,yml}": [
 			"prettier --write"
 		]
+	},
+	"dependencies": {
+		"@fontsource-variable/caveat": "^5.3.0",
+		"@fontsource/pinyon-script": "^5.3.0"
 	}
 }

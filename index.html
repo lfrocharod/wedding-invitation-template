@@ -8,6 +8,10 @@
 		<title>{{ couple.names }} | {{ date.day }} {{ date.monthShort }} {{ date.year }}</title>
 		<meta name="description" content="{{ site.description }}" />
 		<meta name="theme-color" content="#f2eee2" />
+		<!-- Kept out of search results unless site.searchable is true in the config -->
+		<meta name="robots" content="{{ site.robots }}" />
+		<!-- Links out (maps, calendar, gift registries) don't tell other sites where the guest came from -->
+		<meta name="referrer" content="no-referrer" />
 
 		<!-- Social preview (WhatsApp, Facebook, etc.) -->
 		<meta property="og:type" content="website" />
@@ -24,12 +28,6 @@
 		<meta property="og:image:alt" content="{{ site.ogImageAlt }}" />
 		<meta name="twitter:card" content="summary_large_image" />
 
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Pinyon+Script&display=swap"
-			rel="stylesheet"
-		/>
 		<meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
 
 		<!-- The envelope and the scroll reveal only hide content when JS is there to reveal it -->
