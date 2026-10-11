@@ -19,8 +19,8 @@ export default [
 		},
 	},
 	{
-		// Build tooling: Vite config and plugins run in Node
-		files: ['*.js', 'plugins/**/*.js'],
+		// Build tooling and tests run in Node
+		files: ['*.js', 'plugins/**/*.js', 'apps-script/**/*.js'],
 		languageOptions: {
 			globals: globals.node,
 		},

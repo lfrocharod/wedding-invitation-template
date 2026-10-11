@@ -1,12 +1,11 @@
+import { guestName } from './guest.js';
+
 // ---- Envelope ----
 // The invitation starts covered by an envelope (see index.html). Opening it runs the
 // animations in _envelope.scss in two steps, `is-opening` (the seal, flap and letter)
 // and `is-leaving` (the envelope dissolves), then hands over to the invitation.
 
-// A link ending in ?para=Familia%20Pérez writes "Para Familia Pérez" on the envelope.
-const GUEST_PARAM = 'para';
-const GUEST_MAX_LENGTH = 60;
-// Longer names get a smaller font, so they still fit in two lines.
+// Guest names longer than this get a smaller font, so they still fit in two lines.
 const GUEST_LONG_LENGTH = 32;
 
 // onOpen runs inside the guest's tap, which browsers require before playing sound.
@@ -49,17 +48,13 @@ export function initEnvelope({ onOpen, onOpened }) {
 	});
 }
 
+// A link ending in ?para=Familia%20Pérez writes "Para Familia Pérez" on the envelope.
 function writeGuestName() {
-	const name = new URLSearchParams(window.location.search)
-		.get(GUEST_PARAM)
-		?.replace(/\s+/g, ' ')
-		.trim()
-		.slice(0, GUEST_MAX_LENGTH);
+	const name = guestName();
 
 	if (!name) return;
 
 	const guest = document.getElementById('envelope-guest');
-	// textContent, never innerHTML: the name comes from the URL, so anyone can write it.
 	document.getElementById('envelope-guest-name').textContent = name;
 	guest.classList.toggle('envelope__guest--long', name.length > GUEST_LONG_LENGTH);
 	guest.hidden = false;

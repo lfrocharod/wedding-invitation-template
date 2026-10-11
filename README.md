@@ -23,7 +23,7 @@ Phone viewport (390px wide) with the placeholder content.
 ## Features
 
 - **Envelope intro:** the invitation starts inside an envelope sealed with the couple's initials. A tap breaks the seal, opens the flap and slides out the letter, then the invitation animates in. It's drawn with CSS and SVG, so there's no artwork to make, and recolored with a few custom properties. It works with the keyboard and isn't shown at all without JavaScript, since nothing could open it.
-- **Personalized envelopes:** a link ending in `?para=Familia%20Pérez` writes the guest's name on the envelope, so each guest can get their own link.
+- **Personalized envelopes:** a link ending in `?para=Familia%20Pérez` writes the guest's name on the envelope, so each guest can get their own link, and every RSVP records which invitation it came from.
 - **Background music without a visible player:** the song starts with the tap that opens the envelope (browsers block sound before one), fades in, and pauses while the tab is in the background. A pause button appears only on keyboard focus, so keyboard and screen reader users can still stop it.
 - **Mobile-first illustrated layout:** a single column (480px max) where text sits on top of the illustrations, positioned with percentages and sized with container query units (`cqw`), so it scales with the artwork on any screen.
 - **Scroll-reveal animations** with `IntersectionObserver`, starting once the envelope is open. Blocks that come into view together appear one after another. They are opt-in: content only starts hidden when the visitor allows motion (`prefers-reduced-motion: no-preference`) and JavaScript is running, so it's never stuck invisible. With reduced motion, the envelope simply fades away.
@@ -33,7 +33,7 @@ Phone viewport (390px wide) with the placeholder content.
 - **One config file:** `src/invitation.config.js`. A placeholder without a matching value fails the build instead of shipping `{{ … }}` to guests.
 - **Accessible:** a real `<h1>` and section headings for screen readers (the visible titles are drawn into the artwork), labelled form controls and toggle groups, the invitation kept out of reach (`inert`) behind the closed envelope, focus moved to the invitation once it opens and to the confirmation message after sending, and `autocomplete` hints.
 - **Lightweight:** no framework, about 7 KB of JavaScript (3 KB gzipped), illustrations compressed to 256-color lossless WebP (the image folder went from 3.4 MB to about 0.8 MB) and a 0.8 MB demo song.
-- **Tooling:** ESLint, Stylelint, Prettier, unit tests for the build plugin on Node's built-in test runner, a Husky + lint-staged pre-commit hook and GitHub Actions CI that deploys `main` to GitHub Pages.
+- **Tooling:** ESLint, Stylelint, Prettier, unit tests for the build plugin and the Apps Script backend on Node's built-in test runner, a Husky + lint-staged pre-commit hook and GitHub Actions CI that deploys `main` to GitHub Pages.
 
 ## Quick start
 
@@ -89,6 +89,20 @@ https://lfrocharod.github.io/wedding-invitation-template/?para=Familia%20Pérez
 
 Spaces can be written as `%20` or `+`; send yourself the link first to check how your messaging app handles it. Names are cut at 60 characters and long ones get a smaller font, so they fit. The name is inserted as plain text, so a link can't inject HTML. Without `?para=` the envelope just shows the seal.
 
+The RSVP records the name too: the sheet's **Invitación** column says which link each answer came from, so you can tell who answered for which invitation (and whether more people confirmed than it was meant for).
+
+To make the links for a whole guest list, put the names in column A of a Google Sheet and this in B2, then fill it down:
+
+```text
+="https://lfrocharod.github.io/wedding-invitation-template/?para="&ENCODEURL(A2)
+```
+
+With phone numbers in column C (country code included, digits only, e.g. `525512345678`), this in D2 makes a link that opens WhatsApp with the message ready to send (in a sheet set to a locale with a decimal comma, such as Spain's, separate the arguments with `;`):
+
+```text
+=HYPERLINK("https://wa.me/"&C2&"?text="&ENCODEURL("¡Hola! Con mucho cariño te compartimos nuestra invitación: "&B2), "Enviar")
+```
+
 To go without the envelope, delete its `<section class="envelope">` from `index.html` and the invitation shows right away. The music starts from the tap on the envelope, so remove the music as well.
 
 ### 5. Music
@@ -127,9 +141,9 @@ The RSVP backend is chosen at build time with `VITE_RSVP_MODE`. Locally, copy `.
     VITE_RSVP_ENDPOINT=<your web app URL>
     ```
 
-6. Rebuild or redeploy, send a test RSVP and check the **RSVP** tab of the sheet. It is created on the first submission, with a header row.
+6. Rebuild or redeploy, send a test RSVP and check the **RSVP** tab of the sheet. It is created on the first submission, with a header row: Fecha, Nombre, Teléfono, Ceremonia, Recepción and Invitación (the guest name from a [personalized link](#4-envelope), if any).
 
-After editing the script, publish the change with **Deploy → Manage deployments → Edit → Version: New version**, which keeps the same URL.
+After editing the script, publish the change with **Deploy → Manage deployments → Edit → Version: New version**, which keeps the same URL. A tab created by an older version of the script gets any new column headers with the next answer.
 
 Good to know:
 
@@ -171,7 +185,8 @@ A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitH
 ```text
 .
 ├── apps-script/
-│   └── Code.gs                     # RSVP backend (Google Apps Script web app)
+│   ├── Code.gs                     # RSVP backend (Google Apps Script web app)
+│   └── apps-script.test.js         # Runs it against fake Google services
 ├── docs/screenshots/               # README screenshots
 ├── plugins/
 │   ├── vite-plugin-invitation.js   # Injects the config into index.html at build time
