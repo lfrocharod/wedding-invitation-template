@@ -109,6 +109,14 @@ body {
 		color: var(--color-text);
 		margin-top: 0.25rem;
 	}
+
+	&__done {
+		margin: 0;
+		font-family: var(--font-script);
+		font-size: 7cqw;
+		font-weight: 600;
+		color: var(--color-sage-dark);
+	}
 }
 
 // ---- Intro ----
@@ -713,6 +721,11 @@ body {
 }
 
 // ---- Utilities ----
+// `hidden` always wins over a display set above (e.g. the countdown grid's flex).
+[hidden] {
+	display: none !important;
+}
+
 // Off-screen but still read by screen readers, e.g. the section titles that are
 // drawn into the illustrations. !important so it beats the positioned element styles.
 .visually-hidden {
