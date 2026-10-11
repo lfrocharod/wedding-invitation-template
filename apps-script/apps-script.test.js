@@ -5,11 +5,11 @@ import vm from 'node:vm';
 
 const HEADERS = ['Fecha', 'Nombre', 'Teléfono', 'Ceremonia', 'Recepción', 'Invitación'];
 const ANSWER = {
-	nombre: 'Ana López',
-	telefono: '+52 555 000 00 00',
+	nombre: 'Invitada de Ejemplo',
+	telefono: '+52 000 000 00 00',
 	ceremonia: 'Sí',
 	recepcion: 'No',
-	invitacion: 'Familia López',
+	invitacion: 'Familia Ejemplo',
 };
 
 // Runs the Apps Script files in a sandbox, with fakes for the Google services they use.
@@ -58,11 +58,11 @@ test('appends one row per answer, with the invitation it came from', () => {
 	assert.deepEqual(post(ANSWER), { ok: true });
 	assert.deepEqual(rows[0], HEADERS);
 	assert.deepEqual(rows[1].slice(1), [
-		'Ana López',
-		"'+52 555 000 00 00",
+		'Invitada de Ejemplo',
+		"'+52 000 000 00 00",
 		'Sí',
 		'No',
-		'Familia López',
+		'Familia Ejemplo',
 	]);
 });
 
