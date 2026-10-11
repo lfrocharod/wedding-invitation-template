@@ -1,3 +1,5 @@
+@use 'envelope';
+
 // ---- Design tokens ----
 :root {
 	--color-bg: #f2eee2;
@@ -42,11 +44,53 @@ body {
 }
 
 .invitation {
+	position: relative;
 	max-width: 480px;
 	margin: 0 auto;
 	padding: var(--space-lg) var(--space-md);
 	overflow: hidden;
 	container-type: inline-size;
+
+	// Focused by the script when the envelope opens, so keyboard and screen reader users
+	// carry on from here. It isn't a control, so no focus ring.
+	&:focus {
+		outline: none;
+	}
+}
+
+// ---- Music toggle ----
+// Off-screen until it gets keyboard focus: the song has no visible player, but keyboard
+// and screen reader users can still pause it. Shown by src/scripts/music.js once the
+// song plays, in the space above the names. To show it to everyone, drop the
+// :not(:focus) block.
+.music-toggle {
+	position: absolute;
+	top: 0.25rem;
+	right: 0.5rem;
+	z-index: 1;
+	padding: 0 0.75rem;
+	border: 0;
+	border-radius: 999px;
+	background-color: var(--color-sage-deep);
+	color: var(--color-bg);
+	font-family: var(--font-detail);
+	font-size: 1rem;
+	line-height: 1.6;
+	cursor: pointer;
+
+	&:focus-visible {
+		outline: 2px solid var(--color-sage-deep);
+		outline-offset: 2px;
+	}
+
+	&:not(:focus) {
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
 }
 
 // ---- Hero ----
@@ -692,16 +736,16 @@ body {
 }
 
 // ---- Scroll reveal animation ----
-// Opt-in: sections only start hidden when the visitor hasn't asked their OS for
-// reduced motion and JS is running to reveal them (the `js` class on <html>).
+// Opt-in: the header and sections only start hidden when the visitor hasn't asked their
+// OS for reduced motion and JS is running to reveal them (the `js` class on <html>).
 // Otherwise the content is simply there, with nothing to animate.
 @media (prefers-reduced-motion: no-preference) {
-	.js .invitation > section {
+	.js .invitation > :is(header, section) {
 		opacity: 0;
 		transform: translateY(24px);
 		transition:
-			opacity 0.6s ease,
-			transform 0.6s ease;
+			opacity 0.8s ease,
+			transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 
 		&.is-visible {
 			opacity: 1;
