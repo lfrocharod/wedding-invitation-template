@@ -121,7 +121,9 @@ Browsers only let a page play sound after the visitor interacts with it, and Saf
 
 There's no visible player. A "Pausar música" button sits at the top of the invitation, invisible until it receives keyboard focus, so keyboard and screen reader users can still stop a song that would otherwise talk over their screen reader. To show it to everyone, delete the `&:not(:focus)` block of `.music-toggle` in `src/styles/main.scss`.
 
-Known limitations of iPhones that a web page can't work around: the volume setting is ignored (the song plays at the device volume), and silent mode mutes the song even though it's "playing".
+On iPhones a page can't set the volume, so `music.volume` is ignored there and the song plays at the device's media volume. Like a video, it also plays with the silent switch on: that switch silences ringtones and alerts, not media. The pause button and the tab's own mute are the ways out.
+
+The song loops, and every loop restarts with a short gap: MP3 files begin with a few milliseconds of silence (encoder delay), and browsers take a moment to jump back to the start. A song that ends and begins cleanly, as most do, hides it. One cut in the middle of a phrase to loop seamlessly clicks at that point, so let its last notes fade out. The demo song ends that way, letting its last chord ring out before the tune starts again.
 
 To go without music, delete the `<audio>` element and the `music-toggle` button from `index.html`, and the `music` block from the config.
 

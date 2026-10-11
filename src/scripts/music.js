@@ -6,7 +6,8 @@ import invitation from '../invitation.config.js';
 // inside that interaction, so playMusic() runs straight from the tap that opens the
 // envelope rather than when its animation ends.
 //
-// Known limitation: an iPhone in silent mode mutes the song, even though it "plays".
+// On iPhones the volume can't be set from a page (it plays at the device's media volume)
+// and, like a video, the song plays even with the silent switch on.
 const FADE_IN_MS = 2500;
 
 let audio;
