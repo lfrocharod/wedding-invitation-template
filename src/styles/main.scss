@@ -4,10 +4,12 @@
 :root {
 	--color-bg: #f2eee2;
 	--color-sage: #8b9c7e;
-	--color-sage-dark: #6b7a5e;
 
-	// For cream text on filled controls and for smaller text, where sage-dark falls short
-	// of the WCAG AA contrast ratio (4.5:1) against the cream.
+	// The text color. At least 4.5:1 against the cream background, pattern included (the
+	// WCAG AA ratio for body-size text); the lettering drawn in the artwork is lighter.
+	--color-sage-dark: #5c6a51;
+
+	// Darker still, for cream text on filled controls and the RSVP form's smaller text.
 	--color-sage-deep: #56634b;
 	--color-text: #4a4238;
 	--color-error: #a0473a;
@@ -702,7 +704,7 @@ body {
 	&__select {
 		appearance: none;
 		padding-right: 1.4em;
-		background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%236b7a5e' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+		background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235c6a51' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
 			right 0.5em center / 0.6em auto no-repeat;
 		text-align-last: center;
 		cursor: pointer;
