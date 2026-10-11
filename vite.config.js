@@ -20,6 +20,9 @@ export default defineConfig(({ mode }) => {
 	}
 
 	return {
+		// Serve from the path part of site.url: "/" for a site at the root of its domain,
+		// "/<repo>/" for a GitHub Pages project site.
+		base: new URL(invitationConfig.site.url).pathname.replace(/\/?$/, '/'),
 		plugins: [invitation(invitationConfig)],
 	};
 });
