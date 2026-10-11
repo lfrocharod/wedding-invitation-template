@@ -8,6 +8,7 @@
 	// of the WCAG AA contrast ratio (4.5:1) against the cream.
 	--color-sage-deep: #56634b;
 	--color-text: #4a4238;
+	--color-error: #a0473a;
 	--font-detail: 'Caveat', cursive;
 	--font-script: 'Caveat', cursive;
 	--font-title: 'Pinyon Script', cursive;
@@ -543,10 +544,17 @@ body {
 	}
 
 	&__toggle {
+		--pill-border: var(--color-sage);
+
 		position: absolute;
 		display: flex;
 		justify-content: center;
 		gap: 0.4rem;
+
+		// Set by src/scripts/rsvp.js on an event left unanswered
+		&--missing {
+			--pill-border: var(--color-error);
+		}
 
 		&--ceremonia {
 			top: 80%;
@@ -563,7 +571,7 @@ body {
 
 	&__pill {
 		padding: 0.2rem 0.6rem;
-		border: 1px solid var(--color-sage);
+		border: 1px solid var(--pill-border);
 		border-radius: 999px;
 		background: transparent;
 		font-family: var(--font-detail);
@@ -620,6 +628,31 @@ body {
 		&:disabled {
 			opacity: 0.7;
 			cursor: progress;
+		}
+	}
+
+	// Sits on the frame's bottom line, so it gets a background to stay legible. Empty, it
+	// has no size (but stays in place, so screen readers notice when text appears).
+	&__error {
+		position: absolute;
+		top: 92%;
+		left: 50%;
+		width: max-content;
+		max-width: 80%;
+		margin: 0;
+		padding: 0.1em 0.7em;
+		border-radius: 999px;
+		background-color: var(--color-bg);
+		font-family: var(--font-detail);
+		font-size: 3cqw;
+		font-weight: 700;
+		line-height: 1.2;
+		color: var(--color-error);
+		text-align: center;
+		translate: -50% 0;
+
+		&:empty {
+			padding: 0;
 		}
 	}
 
