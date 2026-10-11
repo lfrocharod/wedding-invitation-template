@@ -563,6 +563,8 @@ body {
 }
 
 // ---- Confirmación ----
+// Its smaller text is in --color-sage-deep, which keeps the 4.5:1 contrast that form
+// labels and instructions need.
 // The frame is two images, each stretched to fit what it holds (border-image): the
 // drawn parts (title and rings, the "ceremonia" / "recepción" labels, the bow) keep
 // their size and only the plain run of the side lines between them grows. Lengths are
@@ -616,7 +618,7 @@ body {
 		font-family: var(--font-detail);
 		font-size: 5cqw;
 		line-height: 1.45;
-		color: var(--color-sage-dark);
+		color: var(--color-sage-deep);
 		text-align: center;
 	}
 
@@ -673,7 +675,7 @@ body {
 	}
 
 	&__optional {
-		color: var(--color-sage-dark);
+		color: var(--color-sage-deep);
 		font-size: 0.85em;
 	}
 
@@ -754,7 +756,7 @@ body {
 		font-family: var(--font-detail);
 		font-size: inherit;
 		line-height: 1.3;
-		color: var(--color-sage-dark);
+		color: var(--color-sage-deep);
 		cursor: pointer;
 		transition:
 			background-color 0.15s ease,
@@ -772,7 +774,7 @@ body {
 		font-family: var(--font-detail);
 		font-size: 4.4cqw;
 		font-weight: 700;
-		color: var(--color-sage-dark);
+		color: var(--color-sage-deep);
 		text-align: center;
 	}
 
