@@ -6,7 +6,7 @@ A mobile-first wedding invitation website with scroll animations, a live countdo
 
 The site copy is in Spanish; the code and documentation are in English.
 
-**Live demo:** _coming soon_ <!-- Replace with the deployed URL -->
+**Live demo:** [lfrocharod.github.io/wedding-invitation-template](https://lfrocharod.github.io/wedding-invitation-template/)
 
 ## Screenshots
 
@@ -26,7 +26,7 @@ Phone viewport (390px wide) with the placeholder content.
 - **One config file:** `src/invitation.config.js`. A placeholder without a matching value fails the build instead of shipping `{{ … }}` to guests.
 - **Accessible:** a real `<h1>` and section headings for screen readers (the visible titles are drawn into the artwork), labelled form controls and toggle groups, focus moved to the confirmation message, and `autocomplete` hints.
 - **Lightweight:** no framework, about 5 KB of JavaScript, and illustrations compressed to 256-color lossless WebP (the image folder went from 3.4 MB to about 0.8 MB).
-- **Tooling:** ESLint, Stylelint, Prettier, a Husky + lint-staged pre-commit hook and GitHub Actions CI.
+- **Tooling:** ESLint, Stylelint, Prettier, a Husky + lint-staged pre-commit hook and GitHub Actions CI that deploys `main` to GitHub Pages.
 
 ## Quick start
 
@@ -34,26 +34,26 @@ Requires Node.js 20.19+ or 22.12+.
 
 ```bash
 npm install
-npm run dev # http://localhost:5173
+npm run dev # then open the URL Vite prints (it includes the base path from site.url)
 ```
 
 ## Customize it
 
 ### 1. Content: `src/invitation.config.js`
 
-| Key                                                   | What it controls                                                                                                                         |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `site.url`                                            | Public URL of the deployed site, without a trailing slash. Used for `og:url` and for the absolute `og:image` URL that WhatsApp needs.    |
-| `site.description`                                    | Meta description and link-preview text.                                                                                                  |
-| `site.ogImage`, `site.ogImageAlt`                     | Link-preview image (1200×630) and its alt text.                                                                                          |
-| `couple.partner1`, `couple.partner2`, `couple.joiner` | Names, joined as "Valeria & Daniel" in the page title, link preview and header.                                                          |
-| `couple.photo`                                        | Photo next to the welcome text (586×612 frame; other shapes are cropped, not stretched).                                                 |
-| `date`                                                | Ceremony start in ISO 8601 with the venue's UTC offset, e.g. `2027-05-15T17:00:00-06:00`. Drives the countdown and every displayed date. |
-| `intro`                                               | Welcome text next to the photo.                                                                                                          |
-| `ceremony`, `reception`                               | Venue name, time and Google Maps link.                                                                                                   |
-| `dressCode`                                           | Dress code (read by screen readers), the note, and the inspiration links behind the "Mujer" / "Hombre" buttons.                          |
-| `gifts`                                               | Message and bank or gift-registry details, one line each.                                                                                |
-| `rsvp`                                                | Intro text, note (e.g. "¡No niños!") and confirmation message.                                                                           |
+| Key                                                   | What it controls                                                                                                                                                                                                        |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `site.url`                                            | Public URL of the deployed site, without a trailing slash. Used for `og:url` and for the absolute `og:image` URL that WhatsApp needs. Its path is also the base the site is built for, e.g. `/<repo>/` on GitHub Pages. |
+| `site.description`                                    | Meta description and link-preview text.                                                                                                                                                                                 |
+| `site.ogImage`, `site.ogImageAlt`                     | Link-preview image (1200×630) and its alt text.                                                                                                                                                                         |
+| `couple.partner1`, `couple.partner2`, `couple.joiner` | Names, joined as "Valeria & Daniel" in the page title, link preview and header.                                                                                                                                         |
+| `couple.photo`                                        | Photo next to the welcome text (586×612 frame; other shapes are cropped, not stretched).                                                                                                                                |
+| `date`                                                | Ceremony start in ISO 8601 with the venue's UTC offset, e.g. `2027-05-15T17:00:00-06:00`. Drives the countdown and every displayed date.                                                                                |
+| `intro`                                               | Welcome text next to the photo.                                                                                                                                                                                         |
+| `ceremony`, `reception`                               | Venue name, time and Google Maps link.                                                                                                                                                                                  |
+| `dressCode`                                           | Dress code (read by screen readers), the note, and the inspiration links behind the "Mujer" / "Hombre" buttons.                                                                                                         |
+| `gifts`                                               | Message and bank or gift-registry details, one line each.                                                                                                                                                               |
+| `rsvp`                                                | Intro text, note (e.g. "¡No niños!") and confirmation message.                                                                                                                                                          |
 
 In text values, `\n` is a line break; arrays render one item per line.
 
@@ -117,7 +117,7 @@ The form has a hidden `website` field. People never see it, but bots that fill i
 | `npm run format`       | Format all files with Prettier               |
 | `npm run format:check` | Check formatting without writing             |
 
-A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitHub Actions runs ESLint, Stylelint, the Prettier check and the production build on every push and pull request.
+A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitHub Actions runs ESLint, Stylelint, the Prettier check and the production build on every push and pull request, and deploys `main` to GitHub Pages once they pass.
 
 ## Tech stack
 
@@ -144,7 +144,7 @@ A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitH
 │   └── styles/main.scss
 ├── .env.example                    # RSVP mode and endpoint
 ├── index.html                      # Page template with {{ placeholders }}
-└── vite.config.js                  # Registers the plugin and validates the RSVP variables
+└── vite.config.js                  # Registers the plugin, sets the base path, checks the RSVP variables
 ```
 
 ## How the config gets into the HTML
@@ -155,7 +155,13 @@ Doing this at build time rather than in the browser means the page title, the Op
 
 ## Deployment
 
-`npm run build` writes a static site to `dist/` that any static host can serve. On Vercel or Netlify, import the repository (the Vite preset is detected automatically: build command `npm run build`, output directory `dist`) and add the RSVP environment variables if you use the Apps Script mode.
+The CI workflow deploys `main` to **GitHub Pages** after the checks pass. To do the same with your copy:
+
+1. In the repository settings, open **Pages** and set **Source** to **GitHub Actions**.
+2. Set `site.url` to `https://<user>.github.io/<repo>`. The build picks up `/<repo>/` as its base path from it.
+3. Push to `main`.
+
+`npm run build` writes a static site to `dist/`, so any other static host works too. On Vercel or Netlify, import the repository (the Vite preset is detected automatically: build command `npm run build`, output directory `dist`), set `site.url` to your domain, and add the RSVP environment variables if you use the Apps Script mode.
 
 ## Credits
 

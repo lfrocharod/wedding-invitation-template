@@ -12,7 +12,8 @@ export default {
 	site: {
 		// Public URL of the deployed site, without a trailing slash. Used for og:url and
 		// for the absolute og:image URL that WhatsApp needs to show the preview image.
-		url: 'https://example.com',
+		// Its path is also the base the site is built for (e.g. /<repo>/ on GitHub Pages).
+		url: 'https://lfrocharod.github.io/wedding-invitation-template',
 		description: 'Acompáñanos a celebrar esta nueva etapa.',
 		ogImage: '/assets/images/og-image.jpg',
 		ogImageAlt: 'Ilustración de un auto de recién casados con el texto «¡Vámonos a celebrar!»',
