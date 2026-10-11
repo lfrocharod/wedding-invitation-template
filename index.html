@@ -339,52 +339,47 @@
 				</p>
 			</section>
 
-			<!-- Confirmación: RSVP form -->
+			<!--
+				Confirmación: RSVP form. Its frame is drawn in two parts that stretch with their
+				content (.confirmacion in main.scss): the top one, with the title and the
+				"ceremonia" and "recepción" labels, holds the text and fields; the bottom one, the
+				Sí/No answers and the button. So texts and fields can be added without leaving it.
+			-->
 			<section class="confirmacion">
-				<div class="confirmacion__frame">
-					<img
-						class="confirmacion__bg"
-						src="/assets/images/rsvp.webp"
-						alt=""
-						loading="lazy"
-						width="1059"
-						height="1264"
-					/>
-					<div class="confirmacion__content">
+				<form id="rsvp-form" class="confirmacion__frame rsvp-form">
+					<div class="confirmacion__top">
 						<h2 class="confirmacion__heading visually-hidden">Confirmación</h2>
 
 						<p class="confirmacion__intro">{{ rsvp.intro }}</p>
 
-						<form id="rsvp-form" class="rsvp-form">
-							<label
-								class="rsvp-form__label rsvp-form__label--nombre"
-								for="rsvp-nombre"
-								>Nombre completo</label
-							>
-							<input
-								class="rsvp-form__input rsvp-form__input--nombre"
-								type="text"
-								id="rsvp-nombre"
-								name="nombre"
-								autocomplete="name"
-								required
-							/>
+						<div class="rsvp-form__fields" id="rsvp-fields">
+							<div class="rsvp-form__field">
+								<label class="rsvp-form__label" for="rsvp-nombre"
+									>Nombre completo</label
+								>
+								<input
+									class="rsvp-form__input"
+									type="text"
+									id="rsvp-nombre"
+									name="nombre"
+									autocomplete="name"
+									required
+								/>
+							</div>
 
-							<label
-								class="rsvp-form__label rsvp-form__label--telefono"
-								for="rsvp-telefono"
-								>Teléfono</label
-							>
-							<input
-								class="rsvp-form__input rsvp-form__input--telefono"
-								type="tel"
-								id="rsvp-telefono"
-								name="telefono"
-								inputmode="tel"
-								autocomplete="tel"
-								maxlength="20"
-								required
-							/>
+							<div class="rsvp-form__field">
+								<label class="rsvp-form__label" for="rsvp-telefono">Teléfono</label>
+								<input
+									class="rsvp-form__input"
+									type="tel"
+									id="rsvp-telefono"
+									name="telefono"
+									inputmode="tel"
+									autocomplete="tel"
+									maxlength="20"
+									required
+								/>
+							</div>
 
 							<!-- Honeypot: hidden from people, but naive bots fill it in -->
 							<div class="rsvp-form__trap" aria-hidden="true">
@@ -397,58 +392,67 @@
 									autocomplete="off"
 								/>
 							</div>
+						</div>
 
-							<div
-								class="rsvp-form__toggle rsvp-form__toggle--ceremonia"
-								role="group"
-								aria-label="¿Asistirás a la ceremonia?"
-								data-event="ceremonia"
-							>
-								<button
-									type="button"
-									class="rsvp-form__pill"
-									data-value="Sí"
-									aria-pressed="false"
+						<p class="rsvp-form__message" id="rsvp-success" tabindex="-1" hidden>
+							{{ rsvp.success }}
+						</p>
+					</div>
+
+					<div class="confirmacion__bottom">
+						<div class="rsvp-form__answers" id="rsvp-answers">
+							<!-- Under the "ceremonia" and "recepción" labels drawn in the frame -->
+							<div class="rsvp-form__toggles">
+								<div
+									class="rsvp-form__toggle rsvp-form__toggle--ceremonia"
+									role="group"
+									aria-label="¿Asistirás a la ceremonia?"
+									data-event="ceremonia"
 								>
-									Sí
-								</button>
-								<button
-									type="button"
-									class="rsvp-form__pill"
-									data-value="No"
-									aria-pressed="false"
+									<button
+										type="button"
+										class="rsvp-form__pill"
+										data-value="Sí"
+										aria-pressed="false"
+									>
+										Sí
+									</button>
+									<button
+										type="button"
+										class="rsvp-form__pill"
+										data-value="No"
+										aria-pressed="false"
+									>
+										No
+									</button>
+								</div>
+
+								<div
+									class="rsvp-form__toggle rsvp-form__toggle--recepcion"
+									role="group"
+									aria-label="¿Asistirás a la recepción?"
+									data-event="recepcion"
 								>
-									No
-								</button>
+									<button
+										type="button"
+										class="rsvp-form__pill"
+										data-value="Sí"
+										aria-pressed="false"
+									>
+										Sí
+									</button>
+									<button
+										type="button"
+										class="rsvp-form__pill"
+										data-value="No"
+										aria-pressed="false"
+									>
+										No
+									</button>
+								</div>
 							</div>
 
-							<div
-								class="rsvp-form__toggle rsvp-form__toggle--recepcion"
-								role="group"
-								aria-label="¿Asistirás a la recepción?"
-								data-event="recepcion"
-							>
-								<button
-									type="button"
-									class="rsvp-form__pill"
-									data-value="Sí"
-									aria-pressed="false"
-								>
-									Sí
-								</button>
-								<button
-									type="button"
-									class="rsvp-form__pill"
-									data-value="No"
-									aria-pressed="false"
-								>
-									No
-								</button>
-							</div>
-
-							<div class="rsvp-form__note">
-								<p class="bold">{{ rsvp.note }}</p>
-							</div>
+							<p class="rsvp-form__note">{{ rsvp.note }}</p>
 
 							<button type="submit" class="rsvp-form__submit">
 								Enviar confirmación
@@ -456,13 +460,9 @@
 
 							<!-- What's missing, or why sending failed; read out by screen readers -->
 							<p class="rsvp-form__error" id="rsvp-error" role="alert"></p>
-						</form>
-
-						<p class="rsvp-form__success bold" id="rsvp-success" tabindex="-1" hidden>
-							{{ rsvp.success }}
-						</p>
+						</div>
 					</div>
-				</div>
+				</form>
 			</section>
 
 			<!-- Fountain: closing decorative flourish -->

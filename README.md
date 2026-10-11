@@ -25,7 +25,7 @@ Phone viewport (390px wide) with the placeholder content.
 - **Envelope intro:** the invitation starts inside an envelope sealed with the couple's initials. A tap breaks the seal, opens the flap and slides out the letter, then the invitation animates in. It's drawn with CSS and SVG, so there's no artwork to make, and recolored with a few custom properties. It works with the keyboard and isn't shown at all without JavaScript, since nothing could open it.
 - **Personalized envelopes:** a link ending in `?para=Familia%20Pérez` writes the guest's name on the envelope, so each guest can get their own link, and every RSVP records which invitation it came from.
 - **Background music without a visible player:** the song starts with the tap that opens the envelope (browsers block sound before one), fades in, and pauses while the tab is in the background. A pause button appears only on keyboard focus, so keyboard and screen reader users can still stop it.
-- **Mobile-first illustrated layout:** a single column (480px max) where text sits on top of the illustrations, positioned with percentages and sized with container query units (`cqw`), so it scales with the artwork on any screen.
+- **Mobile-first illustrated layout:** a single column (480px max) where text sits on top of the illustrations, positioned with percentages and sized with container query units (`cqw`), so it scales with the artwork on any screen. The RSVP card's frame stretches with the form (`border-image`), and its fields use 16px text, so iPhones don't zoom in when one is tapped.
 - **Scroll-reveal animations** with `IntersectionObserver`, starting once the envelope is open. Blocks that come into view together appear one after another. They are opt-in: content only starts hidden when the visitor allows motion (`prefers-reduced-motion: no-preference`) and JavaScript is running, so it's never stuck invisible. With reduced motion, the envelope simply fades away.
 - **Live countdown** to the ceremony, read from the config, replaced by "¡Llegó el gran día!" once the day comes.
 - **Add to calendar:** under the countdown, a Google Calendar link and an `.ics` file for iPhone and Outlook, both made from the config at build time, with the two venues and the invitation link in the event.
@@ -72,6 +72,8 @@ In text values, `\n` is a line break; arrays render one item per line.
 ### 2. Images: `public/assets/images/`
 
 Replace the files (keeping their names, or updating the paths in `index.html`). The text over each illustration is positioned with percentages, so artwork with a different composition needs those positions tuned in `src/styles/main.scss`.
+
+The RSVP card is the exception: its frame is cut in two (`rsvp-top.webp`, with the title and the "ceremonia" / "recepción" labels, and `rsvp-bottom.webp`, with the bottom edge) and drawn with `border-image`, so only the plain stretch of the side lines grows and the form can take more fields or longer texts. For a new frame, cut it where its sides run plain, and update the slice sizes listed at the top of `.confirmacion` in `main.scss`.
 
 The section titles and labels ("Templo", "Mujer", "ceremonia", …) are drawn into the illustrations, so their HTML counterparts carry the `visually-hidden` class: screen readers still get them, sighted visitors don't see them twice. If your artwork has no lettering, remove that class in `index.html` and the titles render in place.
 

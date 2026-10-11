@@ -76,6 +76,8 @@ const send = RSVP_MODE === 'apps-script' ? sendToAppsScript : sendDemo;
 
 export function initRsvp() {
 	const form = document.getElementById('rsvp-form');
+	const fields = document.getElementById('rsvp-fields');
+	const answers = document.getElementById('rsvp-answers');
 	const successMessage = document.getElementById('rsvp-success');
 	const errorMessage = document.getElementById('rsvp-error');
 	const submitButton = form.querySelector('.rsvp-form__submit');
@@ -132,9 +134,19 @@ export function initRsvp() {
 		});
 	});
 
+	// The fields and answers give way to a message inside the frame. The frame's parts keep
+	// their height, so it doesn't shrink and pull the rest of the page up.
+	function replaceForm(message) {
+		form.querySelectorAll('.confirmacion__top, .confirmacion__bottom').forEach((part) => {
+			part.style.minHeight = `${part.offsetHeight}px`;
+		});
+		fields.hidden = true;
+		answers.hidden = true;
+		message.hidden = false;
+	}
+
 	function showSuccess() {
-		form.hidden = true;
-		successMessage.hidden = false;
+		replaceForm(successMessage);
 		// The focused submit button just disappeared; move focus so screen
 		// readers announce the confirmation.
 		successMessage.focus();
