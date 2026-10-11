@@ -1,4 +1,4 @@
-import { guestName } from './guest.js';
+import { guestName, guestPasses } from './guest.js';
 
 // ---- RSVP form ----
 // VITE_RSVP_MODE picks where answers go (checked at build time in vite.config.js):
@@ -83,7 +83,11 @@ export function initRsvp() {
 	const submitButton = form.querySelector('.rsvp-form__submit');
 	const nombreInput = document.getElementById('rsvp-nombre');
 	const telefonoInput = document.getElementById('rsvp-telefono');
+	const personasSelect = document.getElementById('rsvp-personas');
+	const mensajeInput = document.getElementById('rsvp-mensaje');
 	const toggles = form.querySelectorAll('.rsvp-form__toggle');
+
+	fillPeople(personasSelect, document.getElementById('rsvp-pases'));
 
 	// The message sits under the submit button in a role="alert" element, so screen
 	// readers announce it. Focus goes to the field that needs fixing, if there is one.
@@ -177,6 +181,14 @@ export function initRsvp() {
 			return;
 		}
 
+		// Also `required`, so the browser asks first; this covers browsers that don't.
+		const personas = Number(personasSelect.value);
+
+		if (!personas) {
+			showError('Por favor indica para cuántas personas es tu respuesta.', personasSelect);
+			return;
+		}
+
 		const unanswered = [...toggles].filter((toggle) => !attendance[toggle.dataset.event]);
 		unanswered.forEach((toggle) => toggle.classList.add('rsvp-form__toggle--missing'));
 
@@ -191,8 +203,10 @@ export function initRsvp() {
 		const payload = {
 			nombre,
 			telefono,
+			personas,
 			ceremonia: attendance.ceremonia,
 			recepcion: attendance.recepcion,
+			mensaje: mensajeInput.value.trim(),
 			// The guest name from a personalized link, so the couple can tell which
 			// invitation the answer is for ('' without one).
 			invitacion: guestName(),
@@ -213,4 +227,25 @@ export function initRsvp() {
 			submitButton.textContent = submitLabel;
 		}
 	});
+}
+
+// The "Personas" options go from 1 to the passes in a personalized link (?pases=4), or to
+// rsvp.maxGuests from the config without them. A link with passes also says so above the
+// form, and a single place needs no choosing.
+function fillPeople(select, passesNote) {
+	const passes = guestPasses();
+	const max = passes ?? Math.max(1, Number(select.dataset.max) || 1);
+
+	for (let people = 1; people <= max; people++) {
+		select.add(new Option(String(people), String(people)));
+	}
+
+	if (max === 1) {
+		select.value = '1';
+	}
+
+	if (passes) {
+		passesNote.textContent = `Pase para ${passes} ${passes === 1 ? 'persona' : 'personas'}`;
+		passesNote.hidden = false;
+	}
 }

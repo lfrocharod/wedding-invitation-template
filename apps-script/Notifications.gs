@@ -24,6 +24,7 @@ function notifyRsvp(answer) {
 	const phone = (settings.CALLMEBOT_PHONE || '').trim();
 	const apiKey = (settings.CALLMEBOT_APIKEY || '').trim();
 	const details = [
+		`Personas: ${answer.personas}`,
 		`Ceremonia: ${answer.ceremonia}`,
 		`Recepción: ${answer.recepcion}`,
 		`Teléfono: ${answer.telefono}`,
@@ -31,6 +32,10 @@ function notifyRsvp(answer) {
 
 	if (answer.invitacion) {
 		details.push(`Invitación: ${answer.invitacion}`);
+	}
+
+	if (answer.mensaje) {
+		details.push(`Mensaje: ${answer.mensaje}`);
 	}
 
 	let channels = 0;
@@ -87,8 +92,10 @@ function sendTestNotification() {
 	const channels = notifyRsvp({
 		nombre: 'Invitado de prueba',
 		telefono: '+52 000 000 00 00',
+		personas: 2,
 		ceremonia: 'Sí',
 		recepcion: 'Sí',
+		mensaje: '¡Muchas felicidades!',
 		invitacion: 'Familia de prueba',
 	});
 

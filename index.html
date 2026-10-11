@@ -352,6 +352,9 @@
 
 						<p class="confirmacion__intro">{{ rsvp.intro }}</p>
 
+						<!-- With ?pases=4 in the link: "Pase para 4 personas" -->
+						<p class="confirmacion__pases" id="rsvp-pases" hidden></p>
+
 						<div class="rsvp-form__fields" id="rsvp-fields">
 							<div class="rsvp-form__field">
 								<label class="rsvp-form__label" for="rsvp-nombre"
@@ -367,18 +370,55 @@
 								/>
 							</div>
 
+							<div class="rsvp-form__row">
+								<div class="rsvp-form__field">
+									<label class="rsvp-form__label" for="rsvp-telefono"
+										>Teléfono</label
+									>
+									<input
+										class="rsvp-form__input"
+										type="tel"
+										id="rsvp-telefono"
+										name="telefono"
+										inputmode="tel"
+										autocomplete="tel"
+										maxlength="20"
+										required
+									/>
+								</div>
+
+								<!--
+									How many people the answer is for, the guest included. The script adds
+									the options, up to the passes in the link or rsvp.maxGuests.
+								-->
+								<div class="rsvp-form__field rsvp-form__field--personas">
+									<label class="rsvp-form__label" for="rsvp-personas"
+										>Personas</label
+									>
+									<select
+										class="rsvp-form__input rsvp-form__select"
+										id="rsvp-personas"
+										name="personas"
+										data-max="{{ rsvp.maxGuests }}"
+										required
+									>
+										<option value="">–</option>
+									</select>
+								</div>
+							</div>
+
 							<div class="rsvp-form__field">
-								<label class="rsvp-form__label" for="rsvp-telefono">Teléfono</label>
-								<input
-									class="rsvp-form__input"
-									type="tel"
-									id="rsvp-telefono"
-									name="telefono"
-									inputmode="tel"
-									autocomplete="tel"
-									maxlength="20"
-									required
-								/>
+								<label class="rsvp-form__label" for="rsvp-mensaje"
+									>Mensaje para los novios
+									<span class="rsvp-form__optional">(opcional)</span></label
+								>
+								<textarea
+									class="rsvp-form__input rsvp-form__textarea"
+									id="rsvp-mensaje"
+									name="mensaje"
+									rows="2"
+									maxlength="500"
+								></textarea>
 							</div>
 
 							<!-- Honeypot: hidden from people, but naive bots fill it in -->
