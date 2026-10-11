@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- {{ … }} values come from src/invitation.config.js, injected at build time -->
+		<title>{{ couple.names }} | {{ date.day }} {{ date.monthShort }} {{ date.year }}</title>
+		<meta name="description" content="{{ site.description }}" />
+		<meta name="theme-color" content="#f2eee2" />
+
+		<!-- Social preview (WhatsApp, Facebook, etc.) -->
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="es_MX" />
+		<meta property="og:url" content="{{ site.url }}" />
+		<meta
+			property="og:title"
+			content="{{ couple.names }} | {{ date.day }} de {{ date.month }}, {{ date.year }}"
+		/>
+		<meta property="og:description" content="{{ site.description }}" />
+		<meta property="og:image" content="{{ site.url }}{{ site.ogImage }}" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content="{{ site.ogImageAlt }}" />
+		<meta name="twitter:card" content="summary_large_image" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Pinyon+Script&display=swap"
+			rel="stylesheet"
+		/>
+		<meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+
+		<!-- Sections are only hidden for the scroll reveal when JS is there to reveal them -->
+		<script>
+			document.documentElement.classList.add('js');
+		</script>
+	</head>
+	<body>
+		<main class="invitation">
+			<header class="hero">
+				<h1 class="hero__names">{{ couple.names }}</h1>
+				<p class="hero__date">
+					<time datetime="{{ date.iso }}"
+						>{{ date.day }} <span aria-hidden="true">•</span> {{ date.monthShort }}
+						<span aria-hidden="true">•</span> {{ date.year }}</time
+					>
+				</p>
+			</header>
+
+			<section class="intro">
+				<div class="intro__row">
+					<div class="intro__photo">
+						<img
+							src="{{ couple.photo }}"
+							alt="{{ couple.names }}"
+							width="586"
+							height="612"
+						/>
+					</div>
+					<img
+						class="intro__icon"
+						src="/assets/images/dog-martini.webp"
+						alt=""
+						width="324"
+						height="573"
+					/>
+				</div>
+				<p class="intro__text">{{ intro }}</p>
+			</section>
+
+			<!--
+				Section titles and labels ("Templo", "Mujer", "ceremonia"…) are drawn into the
+				illustrations, so their HTML counterparts are .visually-hidden: still read by
+				screen readers, not shown twice. With artwork that has no lettering, remove that
+				class and they render in place (positions in main.scss).
+			-->
+
+			<!-- Templo: ceremony details -->
+			<section class="templo">
+				<div class="templo__frame">
+					<img
+						class="templo__bg"
+						src="/assets/images/templo.webp"
+						alt=""
+						loading="lazy"
+						width="1296"
+						height="683"
+					/>
+					<div class="templo__content">
+						<h2 class="templo__heading visually-hidden">Templo</h2>
+						<p class="templo__details">{{ ceremony.venue }}<br />{{ ceremony.time }}</p>
+						<a
+							class="templo__link"
+							href="{{ ceremony.mapsUrl }}"
+							target="_blank"
+							rel="noopener"
+							aria-label="Ubicación del templo"
+							>ubicación</a
+						>
+					</div>
+				</div>
+			</section>
+
+			<!-- Vámonos -->
+			<section class="vamonos">
+				<img
+					class="vamonos__img"
+					src="/assets/images/carro.webp"
+					alt="¡Vámonos a celebrar!"
+					loading="lazy"
+					width="1263"
+					height="718"
+				/>
+			</section>
+
+			<!-- Recepción: reception details -->
+			<section class="recepcion">
+				<div class="recepcion__frame">
+					<img
+						class="recepcion__bg"
+						src="/assets/images/recepcion.webp"
+						alt=""
+						loading="lazy"
+						width="1296"
+						height="688"
+					/>
+					<div class="recepcion__content">
+						<h2 class="recepcion__heading visually-hidden">Recepción</h2>
+						<p class="recepcion__details">
+							{{ reception.venue }}<br />{{ reception.time }}
+						</p>
+						<a
+							class="recepcion__link"
+							href="{{ reception.mapsUrl }}"
+							target="_blank"
+							rel="noopener"
+							aria-label="Ubicación de la recepción"
+							>ubicación</a
+						>
+					</div>
+				</div>
+			</section>
+
+			<!-- Dress code -->
+			<section class="dresscode">
+				<div class="dresscode__frame">
+					<img
+						class="dresscode__bg"
+						src="/assets/images/dresscode.webp"
+						alt=""
+						loading="lazy"
+						width="1296"
+						height="496"
+					/>
+					<div class="dresscode__content">
+						<h2 class="dresscode__heading visually-hidden">Dress code</h2>
+						<p class="dresscode__etiqueta visually-hidden">{{ dressCode.style }}</p>
+						<a
+							class="dresscode__link dresscode__link--mujer"
+							href="{{ dressCode.inspiration.women }}"
+							target="_blank"
+							rel="noopener"
+							aria-label="Inspo mujer"
+						></a>
+						<a
+							class="dresscode__link dresscode__link--hombre"
+							href="{{ dressCode.inspiration.men }}"
+							target="_blank"
+							rel="noopener"
+							aria-label="Inspo hombre"
+						></a>
+						<p class="dresscode__note">{{ dressCode.note }}</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Mesa de Regalos -->
+			<section class="regalos">
+				<div class="regalos__frame">
+					<img
+						class="regalos__bg"
+						src="/assets/images/regalos.webp"
+						alt=""
+						loading="lazy"
+						width="1296"
+						height="700"
+					/>
+					<div class="regalos__content">
+						<h2 class="regalos__heading visually-hidden">Mesa de regalos</h2>
+						<p class="regalos__text">{{ gifts.message }}</p>
+						<p class="regalos__bank">{{ gifts.details }}</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Countdown -->
+			<section class="countdown">
+				<p class="countdown__label">Faltan</p>
+				<div class="countdown__grid">
+					<div class="countdown__unit">
+						<span class="countdown__number" id="cd-days">00</span>
+						<span class="countdown__unit-label">Días</span>
+					</div>
+					<div class="countdown__unit">
+						<span class="countdown__number" id="cd-hours">00</span>
+						<span class="countdown__unit-label">Horas</span>
+					</div>
+					<div class="countdown__unit">
+						<span class="countdown__number" id="cd-minutes">00</span>
+						<span class="countdown__unit-label">Minutos</span>
+					</div>
+					<div class="countdown__unit">
+						<span class="countdown__number" id="cd-seconds">00</span>
+						<span class="countdown__unit-label">Segundos</span>
+					</div>
+				</div>
+			</section>
+
+			<!-- Confirmación: RSVP form -->
+			<section class="confirmacion">
+				<div class="confirmacion__frame">
+					<img
+						class="confirmacion__bg"
+						src="/assets/images/rsvp.webp"
+						alt=""
+						loading="lazy"
+						width="1059"
+						height="1264"
+					/>
+					<div class="confirmacion__content">
+						<h2 class="confirmacion__heading visually-hidden">Confirmación</h2>
+
+						<p class="confirmacion__intro">{{ rsvp.intro }}</p>
+
+						<form id="rsvp-form" class="rsvp-form">
+							<label
+								class="rsvp-form__label rsvp-form__label--nombre"
+								for="rsvp-nombre"
+								>Nombre completo</label
+							>
+							<input
+								class="rsvp-form__input rsvp-form__input--nombre"
+								type="text"
+								id="rsvp-nombre"
+								name="nombre"
+								autocomplete="name"
+								required
+							/>
+
+							<label
+								class="rsvp-form__label rsvp-form__label--telefono"
+								for="rsvp-telefono"
+								>Teléfono</label
+							>
+							<input
+								class="rsvp-form__input rsvp-form__input--telefono"
+								type="tel"
+								id="rsvp-telefono"
+								name="telefono"
+								inputmode="tel"
+								autocomplete="tel"
+								maxlength="20"
+								required
+							/>
+
+							<!-- Honeypot: hidden from people, but naive bots fill it in -->
+							<div class="rsvp-form__trap" aria-hidden="true">
+								<label for="rsvp-website">Sitio web</label>
+								<input
+									type="text"
+									id="rsvp-website"
+									name="website"
+									tabindex="-1"
+									autocomplete="off"
+								/>
+							</div>
+
+							<div
+								class="rsvp-form__toggle rsvp-form__toggle--ceremonia"
+								role="group"
+								aria-label="¿Asistirás a la ceremonia?"
+								data-event="ceremonia"
+							>
+								<button
+									type="button"
+									class="rsvp-form__pill"
+									data-value="Sí"
+									aria-pressed="false"
+								>
+									Sí
+								</button>
+								<button
+									type="button"
+									class="rsvp-form__pill"
+									data-value="No"
+									aria-pressed="false"
+								>
+									No
+								</button>
+							</div>
+
+							<div
+								class="rsvp-form__toggle rsvp-form__toggle--recepcion"
+								role="group"
+								aria-label="¿Asistirás a la recepción?"
+								data-event="recepcion"
+							>
+								<button
+									type="button"
+									class="rsvp-form__pill"
+									data-value="Sí"
+									aria-pressed="false"
+								>
+									Sí
+								</button>
+								<button
+									type="button"
+									class="rsvp-form__pill"
+									data-value="No"
+									aria-pressed="false"
+								>
+									No
+								</button>
+							</div>
+
+							<div class="rsvp-form__note">
+								<p class="bold">{{ rsvp.note }}</p>
+							</div>
+
+							<button type="submit" class="rsvp-form__submit">
+								Enviar confirmación
+							</button>
+						</form>
+
+						<p class="rsvp-form__success bold" id="rsvp-success" tabindex="-1" hidden>
+							{{ rsvp.success }}
+						</p>
+					</div>
+				</div>
+			</section>
+
+			<!-- Fountain: closing decorative flourish -->
+			<section class="fountain">
+				<img
+					class="fountain__img"
+					src="/assets/images/fountain.webp"
+					alt=""
+					loading="lazy"
+					width="811"
+					height="1019"
+				/>
+			</section>
+		</main>
+
+		<script type="module" src="/src/scripts/main.js"></script>
+	</body>
+</html>

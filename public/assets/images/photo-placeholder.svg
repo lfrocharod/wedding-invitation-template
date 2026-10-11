@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="586" height="612" viewBox="0 0 586 612">
+	<path
+		d="M300 40c120-10 240 70 260 210s-40 290-180 325c-130 30-270-15-320-135S60 170 160 90c45-35 90-48 140-50z"
+		fill="#8b9c7e"
+		fill-opacity=".18"
+		stroke="#8b9c7e"
+		stroke-opacity=".5"
+		stroke-width="6"
+	/>
+	<g
+		fill="none"
+		stroke="#6b7a5e"
+		stroke-width="12"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	>
+		<rect x="195" y="240" width="210" height="160" rx="20" />
+		<path d="M215 380l55-65 40 40 30-25 45 50" />
+		<circle cx="350" cy="285" r="17" />
+	</g>
+</svg>
