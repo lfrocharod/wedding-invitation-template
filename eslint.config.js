@@ -31,9 +31,13 @@ export default [
 		languageOptions: {
 			sourceType: 'script',
 			globals: {
+				console: 'readonly',
 				ContentService: 'readonly',
 				LockService: 'readonly',
+				MailApp: 'readonly',
+				PropertiesService: 'readonly',
 				SpreadsheetApp: 'readonly',
+				UrlFetchApp: 'readonly',
 			},
 		},
 	},
