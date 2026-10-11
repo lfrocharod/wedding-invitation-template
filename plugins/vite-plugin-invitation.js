@@ -5,7 +5,8 @@
  * static HTML: link-preview crawlers like WhatsApp's don't run JavaScript.
  *
  *   {{ couple.partner1 }}  value at that path in the config, HTML-escaped
- *   in text               "\n" and array items become <br /> line breaks
+ *   in text               "\n" and array items become <br /> line breaks, and an
+ *                         array of { name, url } becomes links (gifts.registries)
  *   in attributes         newlines collapse to spaces, arrays join with ", "
  *
  * An unknown placeholder fails the build instead of showing "{{ … }}" to guests.
@@ -257,6 +258,19 @@ function foldLine(line) {
 	return parts.join('\r\n ');
 }
 
+// Items of a list of links, such as gifts.registries.
+function isLink(item) {
+	return item !== null && typeof item === 'object' && 'url' in item;
+}
+
+function link({ name, url }, path) {
+	if (!/^https?:\/\//.test(String(url))) {
+		throw new Error(`[invitation] "${path}" needs http(s) links (got "${url}").`);
+	}
+
+	return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(name)}</a>`;
+}
+
 function lookup(context, path) {
 	const value = path.split('.').reduce((node, key) => node?.[key], context);
 
@@ -275,15 +289,21 @@ export default function invitation(config) {
 
 	const asText = (path) => {
 		const value = lookup(context, path);
+
+		if (Array.isArray(value) && value.some(isLink)) {
+			return value.map((item) => link(item, path)).join(' ');
+		}
+
 		const lines = Array.isArray(value) ? value : String(value).split('\n');
 		return lines.map(escapeHtml).join('<br />');
 	};
 
 	const asAttribute = (path) => {
 		const value = lookup(context, path);
-		return escapeHtml(
-			Array.isArray(value) ? value.join(', ') : String(value).replaceAll('\n', ' '),
-		);
+		const text = Array.isArray(value)
+			? value.map((item) => (isLink(item) ? item.name : item)).join(', ')
+			: String(value).replaceAll('\n', ' ');
+		return escapeHtml(text);
 	};
 
 	return {

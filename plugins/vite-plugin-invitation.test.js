@@ -46,6 +46,32 @@ test('in attributes, collapses line breaks and joins lists with commas', () => {
 	);
 });
 
+test('turns a list of { name, url } into links, and an empty one into nothing', () => {
+	const gifts = {
+		...config.gifts,
+		registries: [
+			{ name: 'Mesa "A" & B', url: 'https://registry.example/?a=1&b=2' },
+			{ name: 'Otra', url: 'https://other.example/' },
+		],
+	};
+
+	assert.equal(
+		render('<p>{{ gifts.registries }}</p>', { gifts }),
+		'<p><a href="https://registry.example/?a=1&amp;b=2" target="_blank" rel="noopener">Mesa &quot;A&quot; &amp; B</a> ' +
+			'<a href="https://other.example/" target="_blank" rel="noopener">Otra</a></p>',
+	);
+	assert.equal(
+		render('<p title="{{ gifts.registries }}"></p>', { gifts }),
+		'<p title="Mesa &quot;A&quot; &amp; B, Otra"></p>',
+	);
+	assert.equal(render('<p>{{ gifts.registries }}</p>', { gifts: { registries: [] } }), '<p></p>');
+});
+
+test('fails the build on a link that is not http(s)', () => {
+	const gifts = { registries: [{ name: 'X', url: 'javascript:alert(1)' }] };
+	assert.throws(() => render('{{ gifts.registries }}', { gifts }), /gifts\.registries/);
+});
+
 test('derives the names, the initials for the wax seal and the date parts', () => {
 	assert.equal(render('{{ couple.names }}'), 'ángela &amp; Novio');
 	assert.equal(render('{{ couple.initials.partner1 }}{{ couple.initials.partner2 }}'), 'ÁN');

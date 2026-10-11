@@ -79,6 +79,11 @@ export default {
 			'CLABE: 000 000 00000000000 0',
 			'(datos de ejemplo)',
 		],
+		// Online gift registries, as buttons under the gifts card. [] for none.
+		registries: [
+			{ name: 'Liverpool', url: 'https://mesaderegalos.liverpool.com.mx/' },
+			{ name: 'Amazon', url: 'https://www.amazon.com.mx/wedding/home' },
+		],
 	},
 
 	rsvp: {
