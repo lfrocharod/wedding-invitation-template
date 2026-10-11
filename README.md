@@ -28,7 +28,7 @@ Phone viewport (390px wide) with the placeholder content.
 - **Mobile-first illustrated layout:** a single column (480px max) where text sits on top of the illustrations, positioned with percentages and sized with container query units (`cqw`), so it scales with the artwork on any screen.
 - **Scroll-reveal animations** with `IntersectionObserver`, starting once the envelope is open. Blocks that come into view together appear one after another. They are opt-in: content only starts hidden when the visitor allows motion (`prefers-reduced-motion: no-preference`) and JavaScript is running, so it's never stuck invisible. With reduced motion, the envelope simply fades away.
 - **Live countdown** to the ceremony, read from the config, replaced by "¡Llegó el gran día!" once the day comes.
-- **RSVP form** with Sí/No toggles per event, phone formatting (`+52 555 000 00 00`), validation messages in the form itself rather than pop-up alerts, a honeypot field against bots and two backends: a network-free **demo** mode and a **Google Apps Script** mode that writes each answer to a Google Sheet.
+- **RSVP form** with Sí/No toggles per event, phone formatting (`+52 555 000 00 00`), validation messages in the form itself rather than pop-up alerts, a honeypot field against bots and two backends: a network-free **demo** mode and a **Google Apps Script** mode that writes each answer to a Google Sheet and can send it to the couple by email or WhatsApp.
 - **Link previews that work on WhatsApp:** the page title and Open Graph tags are in the static HTML, generated from the config by a small Vite plugin. Link-preview crawlers don't run JavaScript.
 - **One config file:** `src/invitation.config.js`. A placeholder without a matching value fails the build instead of shipping `{{ … }}` to guests.
 - **Accessible:** a real `<h1>` and section headings for screen readers (the visible titles are drawn into the artwork), labelled form controls and toggle groups, the invitation kept out of reach (`inert`) behind the closed envelope, focus moved to the invitation once it opens and to the confirmation message after sending, and `autocomplete` hints.
@@ -150,6 +150,26 @@ Good to know:
 - `VITE_*` variables are inlined into the public JavaScript bundle. The endpoint isn't a secret; keeping it out of the repo keeps the template generic and away from scrapers.
 - "Anyone" access is what lets the browser read the script's reply. The script validates every field, drops honeypot submissions, uses a lock so simultaneous answers don't collide, and stores values starting with `=`, `+`, `-` or `@` as plain text so Sheets never evaluates them as formulas (phone numbers like `+52 …` included).
 
+### Notifications by email or WhatsApp (optional)
+
+Instead of checking the sheet, the couple can get each answer by email, by WhatsApp, or both:
+
+1. In the Apps Script project, add a script file (**+ → Script**) named `Notifications` and replace its contents with [`apps-script/Notifications.gs`](apps-script/Notifications.gs).
+2. Open **Project Settings** (the gear icon) and, under **Script properties**, add the ones for the channels you want:
+
+    | Property           | Value                                                                      |
+    | ------------------ | -------------------------------------------------------------------------- |
+    | `NOTIFY_EMAIL`     | One or more email addresses, separated by commas                           |
+    | `CALLMEBOT_PHONE`  | The WhatsApp number to notify, with its country code, e.g. `+525512345678` |
+    | `CALLMEBOT_APIKEY` | That number's CallMeBot API key (see below)                                |
+
+3. Back in the editor, open `Notifications.gs`, select `sendTestNotification` in the toolbar and click **Run**. Authorize the new permissions (sending email as you and connecting to an external service), and a test answer arrives on each channel. If one doesn't, **Executions** shows why.
+4. Publish a new version: **Deploy → Manage deployments → Edit → Version: New version**.
+
+Emails come from the Google account that owns the script, which can reach 100 recipients a day on a free account (two addresses use two per answer). WhatsApp messages go through [CallMeBot](https://www.callmebot.com/blog/free-api-whatsapp-messages/), a free service for personal use that isn't part of WhatsApp: whoever gets the messages adds the CallMeBot number shown on that page to their contacts and sends it "I allow callmebot to send me messages" from WhatsApp; the reply contains their API key. CallMeBot sometimes pauses new activations when it's at capacity, so email is the dependable channel.
+
+A notification that fails is only logged: the answer is saved in the sheet first, either way. Without `Notifications.gs` the script sends nothing and never asks for those permissions, and the CallMeBot key stays in the script's properties, out of the repository and the site.
+
 ### Spam protection
 
 The form has a hidden `website` field. People never see it, but bots that fill in every field do. Those submissions get a fake success message and are never sent; the Apps Script drops them too, in case a bot posts to the endpoint directly.
@@ -186,7 +206,8 @@ A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitH
 .
 ├── apps-script/
 │   ├── Code.gs                     # RSVP backend (Google Apps Script web app)
-│   └── apps-script.test.js         # Runs it against fake Google services
+│   ├── Notifications.gs            # Optional: each answer by email and/or WhatsApp
+│   └── apps-script.test.js         # Runs both against fake Google services
 ├── docs/screenshots/               # README screenshots
 ├── plugins/
 │   ├── vite-plugin-invitation.js   # Injects the config into index.html at build time

@@ -14,8 +14,9 @@ const ANSWER = {
 
 // Runs the Apps Script files in a sandbox, with fakes for the Google services they use.
 // `rows` is the RSVP tab, one array per row; arrays from the sandbox are copied into this
-// realm so assert can compare them.
-function load({ files = ['Code.gs'], rows = [] } = {}) {
+// realm so assert can compare them. `sent` collects the emails and fetched URLs.
+function load({ files = ['Code.gs'], rows = [], properties = {}, failing = false } = {}) {
+	const sent = { emails: [], urls: [] };
 	const sheet = {
 		getLastColumn: () => Math.max(0, ...rows.map((row) => row.length)),
 		appendRow: (row) => rows.push([...row]),
@@ -37,7 +38,29 @@ function load({ files = ['Code.gs'], rows = [] } = {}) {
 		},
 		LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
 		SpreadsheetApp: {
-			getActiveSpreadsheet: () => ({ getSheetByName: () => sheet, insertSheet: () => sheet }),
+			getActiveSpreadsheet: () => ({
+				getSheetByName: () => sheet,
+				insertSheet: () => sheet,
+				getUrl: () => 'https://docs.google.com/spreadsheets/d/example',
+			}),
+		},
+		PropertiesService: {
+			getScriptProperties: () => ({ getProperties: () => ({ ...properties }) }),
+		},
+		MailApp: {
+			sendEmail: (message) => {
+				if (failing) throw new Error('Service invoked too many times for one day: email.');
+				sent.emails.push({ ...message });
+			},
+		},
+		UrlFetchApp: {
+			fetch: (url) => {
+				sent.urls.push(new URL(url));
+				return {
+					getResponseCode: () => (failing ? 500 : 200),
+					getContentText: () => '<p>Message queued.</p>',
+				};
+			},
 		},
 	});
 
@@ -47,6 +70,7 @@ function load({ files = ['Code.gs'], rows = [] } = {}) {
 
 	return {
 		rows,
+		sent,
 		post: (data) => context.doPost({ postData: { contents: JSON.stringify(data) } }),
 		postText: (text) => context.doPost({ postData: { contents: text } }),
 	};
@@ -100,4 +124,75 @@ test('stores nothing for honeypot submissions, incomplete answers or bad JSON', 
 	assert.deepEqual(post({ ...ANSWER, nombre: '   ' }), { ok: false, error: 'missing-fields' });
 	assert.deepEqual(postText('nombre=Ana'), { ok: false, error: 'invalid-json' });
 	assert.equal(rows.length, 0);
+});
+
+const BOTH_CHANNELS = {
+	NOTIFY_EMAIL: 'novia@example.com, novio@example.com',
+	CALLMEBOT_PHONE: '+52 55 1234 5678',
+	CALLMEBOT_APIKEY: '123456',
+};
+
+test('sends no notifications without Notifications.gs, even with the settings', () => {
+	const { sent, post } = load({ properties: BOTH_CHANNELS });
+
+	assert.deepEqual(post(ANSWER), { ok: true });
+	assert.deepEqual(sent, { emails: [], urls: [] });
+});
+
+test('emails each answer to NOTIFY_EMAIL', () => {
+	const { sent, post } = load({
+		files: ['Code.gs', 'Notifications.gs'],
+		properties: { NOTIFY_EMAIL: BOTH_CHANNELS.NOTIFY_EMAIL },
+	});
+
+	post(ANSWER);
+	assert.equal(sent.emails.length, 1);
+	assert.equal(sent.emails[0].to, 'novia@example.com, novio@example.com');
+	assert.equal(sent.emails[0].subject, 'Nueva respuesta: Ana López');
+	assert.match(sent.emails[0].body, /Ceremonia: Sí\nRecepción: No\nTeléfono: \+52 555 000 00 00/);
+	assert.match(sent.emails[0].body, /Invitación: Familia López/);
+	assert.match(sent.emails[0].body, /docs\.google\.com\/spreadsheets/);
+	assert.deepEqual(sent.urls, []);
+});
+
+test('sends each answer by WhatsApp through CallMeBot', () => {
+	const { sent, post } = load({
+		files: ['Code.gs', 'Notifications.gs'],
+		properties: { CALLMEBOT_PHONE: ' +52 55 1234 5678 ', CALLMEBOT_APIKEY: '123456' },
+	});
+
+	post({ ...ANSWER, invitacion: '' });
+	assert.equal(sent.urls.length, 1);
+
+	const url = sent.urls[0];
+	assert.equal(url.origin + url.pathname, 'https://api.callmebot.com/whatsapp.php');
+	assert.equal(url.searchParams.get('phone'), '+52 55 1234 5678');
+	assert.equal(url.searchParams.get('apikey'), '123456');
+	assert.equal(
+		url.searchParams.get('text'),
+		'💌 *Ana López* respondió a la invitación\nCeremonia: Sí\nRecepción: No\nTeléfono: +52 555 000 00 00',
+	);
+	assert.deepEqual(sent.emails, []);
+});
+
+test('a failed notification never loses the answer', () => {
+	const { rows, post } = load({
+		files: ['Code.gs', 'Notifications.gs'],
+		properties: BOTH_CHANNELS,
+		failing: true,
+	});
+
+	assert.deepEqual(post(ANSWER), { ok: true });
+	assert.equal(rows.length, 2);
+});
+
+test('notifies nothing for answers that are not stored', () => {
+	const { sent, post } = load({
+		files: ['Code.gs', 'Notifications.gs'],
+		properties: BOTH_CHANNELS,
+	});
+
+	post({ ...ANSWER, website: 'https://spam.example' });
+	post({ ...ANSWER, telefono: '' });
+	assert.deepEqual(sent, { emails: [], urls: [] });
 });

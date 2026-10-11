@@ -8,6 +8,7 @@
  */
 
 /* exported doGet, doPost */
+/* global notifyRsvp */
 
 const SHEET_NAME = 'RSVP';
 const HEADERS = ['Fecha', 'Nombre', 'Teléfono', 'Ceremonia', 'Recepción', 'Invitación'];
@@ -60,6 +61,12 @@ function doPost(e) {
 		getSheet().appendRow(row);
 	} finally {
 		lock.releaseLock();
+	}
+
+	// Email and WhatsApp notices, when Notifications.gs is part of the project. Without
+	// it, the script never needs permission to send anything.
+	if (typeof notifyRsvp === 'function') {
+		notifyRsvp(answer);
 	}
 
 	return respond({ ok: true });
