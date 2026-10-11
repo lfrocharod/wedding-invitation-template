@@ -17,10 +17,12 @@ export function initCountdown() {
 		const now = new Date();
 		const diff = WEDDING_DATE - now;
 
-		// The day has come: swap the zeros for the message in index.html.
+		// The day has come: swap the zeros (and the calendar links) for the message in
+		// index.html.
 		if (diff <= 0) {
 			document.querySelector('.countdown__label').hidden = true;
 			document.querySelector('.countdown__grid').hidden = true;
+			document.getElementById('cd-calendar').hidden = true;
 			document.getElementById('cd-done').hidden = false;
 			clearInterval(timer);
 			return;
