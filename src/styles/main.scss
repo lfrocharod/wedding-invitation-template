@@ -3,6 +3,10 @@
 	--color-bg: #f2eee2;
 	--color-sage: #8b9c7e;
 	--color-sage-dark: #6b7a5e;
+
+	// For cream text on filled controls and for smaller text, where sage-dark falls short
+	// of the WCAG AA contrast ratio (4.5:1) against the cream.
+	--color-sage-deep: #56634b;
 	--color-text: #4a4238;
 	--font-detail: 'Caveat', cursive;
 	--font-script: 'Caveat', cursive;
@@ -571,9 +575,9 @@ body {
 			color 0.15s ease;
 
 		&--active {
-			background-color: var(--color-sage-dark);
+			background-color: var(--color-sage-deep);
 			color: var(--color-bg);
-			border-color: var(--color-sage-dark);
+			border-color: var(--color-sage-deep);
 		}
 	}
 
@@ -603,7 +607,7 @@ body {
 		padding: 0.4rem 0;
 		border: none;
 		border-radius: 999px;
-		background-color: var(--color-sage-dark);
+		background-color: var(--color-sage-deep);
 		color: var(--color-bg);
 		font-family: var(--font-detail);
 		font-size: 3cqw;
