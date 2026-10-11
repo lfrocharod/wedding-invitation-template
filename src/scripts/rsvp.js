@@ -75,8 +75,25 @@ const send = RSVP_MODE === 'apps-script' ? sendToAppsScript : sendDemo;
 export function initRsvp() {
 	const form = document.getElementById('rsvp-form');
 	const successMessage = document.getElementById('rsvp-success');
+	const errorMessage = document.getElementById('rsvp-error');
 	const submitButton = form.querySelector('.rsvp-form__submit');
+	const nombreInput = document.getElementById('rsvp-nombre');
 	const telefonoInput = document.getElementById('rsvp-telefono');
+	const toggles = form.querySelectorAll('.rsvp-form__toggle');
+
+	// The message sits under the submit button in a role="alert" element, so screen
+	// readers announce it. Focus goes to the field that needs fixing, if there is one.
+	function showError(message, field) {
+		errorMessage.textContent = message;
+		field?.focus();
+	}
+
+	// Any change means the guest is fixing things; the next submit checks again.
+	function clearError() {
+		errorMessage.textContent = '';
+	}
+
+	form.addEventListener('input', clearError);
 
 	telefonoInput.addEventListener('input', (event) => {
 		const cursorAtEnd = event.target.selectionStart === event.target.value.length;
@@ -94,7 +111,7 @@ export function initRsvp() {
 		recepcion: null,
 	};
 
-	document.querySelectorAll('.rsvp-form__toggle').forEach((toggle) => {
+	toggles.forEach((toggle) => {
 		const eventName = toggle.dataset.event;
 
 		toggle.querySelectorAll('.rsvp-form__pill').forEach((pill) => {
@@ -107,6 +124,8 @@ export function initRsvp() {
 				pill.classList.add('rsvp-form__pill--active');
 				pill.setAttribute('aria-pressed', 'true');
 				attendance[eventName] = pill.dataset.value;
+				toggle.classList.remove('rsvp-form__toggle--missing');
+				clearError();
 			});
 		});
 	});
@@ -129,16 +148,29 @@ export function initRsvp() {
 			return;
 		}
 
-		if (!attendance.ceremonia || !attendance.recepcion) {
-			alert('Por favor responde para ambos eventos.');
-			return;
-		}
+		clearError();
 
-		const nombre = document.getElementById('rsvp-nombre').value.trim();
+		// Empty fields are caught by the browser (they're `required`); this catches
+		// names and phones made of spaces only.
+		const nombre = nombreInput.value.trim();
 		const telefono = telefonoInput.value.trim();
 
 		if (!nombre || !telefono) {
-			alert('Por favor completa tu nombre y teléfono.');
+			showError(
+				'Por favor completa tu nombre y teléfono.',
+				nombre ? telefonoInput : nombreInput,
+			);
+			return;
+		}
+
+		const unanswered = [...toggles].filter((toggle) => !attendance[toggle.dataset.event]);
+		unanswered.forEach((toggle) => toggle.classList.add('rsvp-form__toggle--missing'));
+
+		if (unanswered.length) {
+			showError(
+				'Por favor responde para ambos eventos.',
+				unanswered[0].querySelector('.rsvp-form__pill'),
+			);
 			return;
 		}
 
@@ -158,7 +190,7 @@ export function initRsvp() {
 			showSuccess();
 		} catch (error) {
 			console.error('RSVP submission failed:', error);
-			alert('Hubo un problema al enviar tu confirmación. Intenta de nuevo.');
+			showError('Hubo un problema al enviar tu confirmación. Intenta de nuevo.');
 		} finally {
 			submitButton.disabled = false;
 			submitButton.textContent = submitLabel;
