@@ -536,108 +536,119 @@ body {
 }
 
 // ---- Confirmación ----
+// The frame is two images, each stretched to fit what it holds (border-image): the
+// drawn parts (title and rings, the "ceremonia" / "recepción" labels, the bow) keep
+// their size and only the plain run of the side lines between them grows. Lengths are
+// in pixels of the artwork, which is 1059px wide, so everything scales with it:
+//   rsvp-top.webp     1059×1000, slices 300 94 170 100 (top, right, bottom, left)
+//   rsvp-bottom.webp  1059×264,  slices 0 115 114 100
 .confirmacion {
+	--px: calc(100cqw / 1059);
+
 	margin-bottom: var(--space-xl);
 
-	&__frame {
+	&__top,
+	&__bottom {
 		position: relative;
-		width: 100%;
+		isolation: isolate;
+
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: -1;
+			border-style: solid;
+			pointer-events: none;
+		}
 	}
 
-	&__bg {
-		width: 100%;
-		height: auto;
-		display: block;
-		aspect-ratio: 1059 / 1264;
+	&__top {
+		display: flex;
+		flex-direction: column;
+		padding: calc(300 * var(--px)) calc(150 * var(--px)) calc(170 * var(--px));
+
+		&::before {
+			border-width: calc(300 * var(--px)) calc(94 * var(--px)) calc(170 * var(--px))
+				calc(100 * var(--px));
+			border-image: url('/assets/images/rsvp-top.webp') 300 94 170 100 fill stretch;
+		}
 	}
 
-	&__content {
-		position: absolute;
-		inset: 0;
-	}
+	&__bottom {
+		padding: calc(16 * var(--px)) calc(150 * var(--px)) calc(124 * var(--px));
 
-	&__heading {
-		position: absolute;
-		top: 13%;
-		left: 21%;
-		width: 60%;
-		margin: 0;
-		font-family: var(--font-script);
-		font-size: 7.5cqw;
-		font-weight: 700;
-		color: var(--color-sage-dark);
-		text-align: center;
+		&::before {
+			border-width: 0 calc(115 * var(--px)) calc(114 * var(--px)) calc(100 * var(--px));
+			border-image: url('/assets/images/rsvp-bottom.webp') 0 115 114 100 fill stretch;
+		}
 	}
 
 	&__intro {
-		position: absolute;
-		top: 25%;
-		left: 15%;
-		width: 72%;
-		margin: 0;
+		margin: 0 0 0.6em;
 		font-family: var(--font-detail);
 		font-size: 5cqw;
-		line-height: 1.5;
+		line-height: 1.45;
 		color: var(--color-sage-dark);
 		text-align: center;
 	}
 }
 
 .rsvp-form {
-	&__label {
-		position: absolute;
-		width: 60%;
-		font-family: var(--font-detail);
-		font-size: 3cqw;
-		color: var(--color-text);
-		text-align: center;
-
-		&--nombre {
-			top: 46%;
-			left: 20%;
-		}
-
-		&--telefono {
-			top: 55%;
-			left: 20%;
-		}
+	&__fields {
+		display: flex;
+		flex-direction: column;
+		gap: 0.7em;
+		margin-bottom: 1.2em;
+		font-size: 4.4cqw;
 	}
 
+	&__field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15em;
+	}
+
+	&__label {
+		font-family: var(--font-detail);
+		color: var(--color-text);
+		text-align: center;
+	}
+
+	// 16px at least: iPhones zoom into any field with smaller text when it's focused
 	&__input {
-		position: absolute;
-		width: 50%;
-		padding: 0.3rem 0.5rem;
+		width: 100%;
+		padding: 0.25em 0.5em;
 		border: 1px solid var(--color-sage);
 		border-radius: 4px;
 		background: transparent;
 		font-family: var(--font-detail);
-		font-size: 2.2cqw;
+		font-size: max(1rem, 4.4cqw);
 		color: var(--color-text);
 		text-align: center;
 
 		&:focus {
 			outline: none;
-			border-color: var(--color-sage-dark);
+			border-color: var(--color-sage-deep);
+			box-shadow: 0 0 0 1px var(--color-sage-deep);
 		}
+	}
 
-		&--nombre {
-			top: 49%;
-			left: 25%;
-		}
-
-		&--telefono {
-			top: 58%;
-			left: 25%;
-		}
+	// Lined up under the "ceremonia" and "recepción" labels drawn in the frame, whose
+	// centers are at x = 354 and 714 of the artwork (the content box starts at 150).
+	&__toggles {
+		position: relative;
+		height: 2.2em;
+		font-size: 4.2cqw;
 	}
 
 	&__toggle {
 		--pill-border: var(--color-sage);
 
 		position: absolute;
+		top: 0;
 		display: flex;
-		justify-content: center;
-		gap: 0.4rem;
+		gap: 0.4em;
+		translate: -50% 0;
 
 		// Set by src/scripts/rsvp.js on an event left unanswered
 		&--missing {
@@ -645,25 +656,23 @@ body {
 		}
 
 		&--ceremonia {
-			top: 80%;
-			left: 16%;
-			width: 36%;
+			left: calc((354 - 150) * var(--px));
 		}
 
 		&--recepcion {
-			top: 80%;
-			left: 50%;
-			width: 36%;
+			left: calc((714 - 150) * var(--px));
 		}
 	}
 
 	&__pill {
-		padding: 0.2rem 0.6rem;
+		min-width: 2.9em;
+		padding: 0.2em 0.8em;
 		border: 1px solid var(--pill-border);
 		border-radius: 999px;
 		background: transparent;
 		font-family: var(--font-detail);
-		font-size: 1.8cqw;
+		font-size: inherit;
+		line-height: 1.3;
 		color: var(--color-sage-dark);
 		cursor: pointer;
 		transition:
@@ -678,35 +687,25 @@ body {
 	}
 
 	&__note {
-		position: absolute;
-		top: 80%;
-		left: 20%;
-		width: 60%;
-		margin: 0;
+		margin: 0.5em 0 0.6em;
+		font-family: var(--font-detail);
+		font-size: 4.4cqw;
+		font-weight: 700;
+		color: var(--color-sage-dark);
 		text-align: center;
-		pointer-events: none;
-
-		.bold {
-			margin: 0;
-			font-family: var(--font-detail);
-			font-weight: 700;
-			font-size: 3cqw;
-			color: var(--color-sage-dark);
-		}
 	}
 
 	&__submit {
-		position: absolute;
-		top: 86%;
-		left: 22%;
-		width: 58%;
-		padding: 0.4rem 0;
+		display: block;
+		width: 80%;
+		margin: 0 auto;
+		padding: 0.35em 0;
 		border: none;
 		border-radius: 999px;
 		background-color: var(--color-sage-deep);
 		color: var(--color-bg);
 		font-family: var(--font-detail);
-		font-size: 3cqw;
+		font-size: 4.6cqw;
 		cursor: pointer;
 
 		&:hover {
@@ -719,43 +718,30 @@ body {
 		}
 	}
 
-	// Sits on the frame's bottom line, so it gets a background to stay legible. Empty, it
-	// has no size (but stays in place, so screen readers notice when text appears).
+	// Keeps a line's room when empty, so a message doesn't push the frame around (and it
+	// stays in place, so screen readers notice when text appears).
 	&__error {
-		position: absolute;
-		top: 92%;
-		left: 50%;
-		width: max-content;
-		max-width: 80%;
-		margin: 0;
-		padding: 0.1em 0.7em;
-		border-radius: 999px;
-		background-color: var(--color-bg);
+		min-height: 1.3em;
+		margin: 0.4em 0 0;
 		font-family: var(--font-detail);
-		font-size: 3cqw;
+		font-size: 4cqw;
 		font-weight: 700;
-		line-height: 1.2;
+		line-height: 1.3;
 		color: var(--color-error);
 		text-align: center;
-		translate: -50% 0;
-
-		&:empty {
-			padding: 0;
-		}
 	}
 
-	&__success {
-		position: absolute;
-		top: 50%;
-		left: 15%;
-		width: 70%;
-		margin: 0;
+	// The confirmation that replaces the fields once the answer is sent
+	&__message {
+		margin: auto 0;
 		font-family: var(--font-script);
-		font-size: 5cqw;
+		font-size: 5.5cqw;
+		font-weight: 700;
+		line-height: 1.4;
 		color: var(--color-sage-dark);
 		text-align: center;
 
-		// Receives focus after submitting so screen readers announce it; not a control
+		// Receives focus so screen readers announce it; not a control
 		&:focus {
 			outline: none;
 		}
