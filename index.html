@@ -455,6 +455,14 @@
 							{{ rsvp.success }}
 						</p>
 
+						<!-- When this device already sent an answer for this invitation -->
+						<div class="rsvp-form__sent" id="rsvp-sent" hidden>
+							<p class="rsvp-form__message">Ya recibimos tu respuesta. ¡Gracias!</p>
+							<button type="button" class="rsvp-form__again" id="rsvp-again">
+								Enviar otra respuesta
+							</button>
+						</div>
+
 						<!-- Replaces the form once rsvp.deadline has passed -->
 						<p class="rsvp-form__message" id="rsvp-closed" tabindex="-1" hidden>
 							{{ rsvp.closed }}

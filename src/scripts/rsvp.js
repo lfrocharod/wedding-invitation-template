@@ -80,6 +80,8 @@ export function initRsvp() {
 	const answers = document.getElementById('rsvp-answers');
 	const successMessage = document.getElementById('rsvp-success');
 	const closedMessage = document.getElementById('rsvp-closed');
+	const sentMessage = document.getElementById('rsvp-sent');
+	const againButton = document.getElementById('rsvp-again');
 	const deadline = document.getElementById('rsvp-deadline');
 	const intro = form.querySelector('.confirmacion__intro');
 	const passesNote = document.getElementById('rsvp-pases');
@@ -91,7 +93,7 @@ export function initRsvp() {
 	const mensajeInput = document.getElementById('rsvp-mensaje');
 	const toggles = form.querySelectorAll('.rsvp-form__toggle');
 
-	fillPeople(personasSelect, passesNote);
+	const hasPasses = fillPeople(personasSelect, passesNote);
 
 	// The message sits under the submit button in a role="alert" element, so screen
 	// readers announce it. Focus goes to the field that needs fixing, if there is one.
@@ -159,6 +161,20 @@ export function initRsvp() {
 		message.hidden = false;
 	}
 
+	// Brings the form back, as it was when the page loaded.
+	function restoreForm() {
+		form.querySelectorAll('.confirmacion__top, .confirmacion__bottom').forEach((part) => {
+			part.style.removeProperty('min-height');
+		});
+		[successMessage, closedMessage, sentMessage].forEach((message) => {
+			message.hidden = true;
+		});
+		fields.hidden = false;
+		answers.hidden = false;
+		deadline.hidden = false;
+		passesNote.hidden = !hasPasses;
+	}
+
 	// After the last day of rsvp.deadline (the end of it at the venue, worked out by the
 	// build plugin), the form closes. NaN without a deadline, which never compares later.
 	const closesAt = Date.parse(deadline.dataset.closes);
@@ -170,9 +186,22 @@ export function initRsvp() {
 		replaceForm(closedMessage, options);
 	}
 
-	if (isClosed()) {
+	// A guest who already answered on this device (for this invitation) is told so instead
+	// of finding an empty form, e.g. when coming back for the address on the day. They can
+	// still send another answer, until the deadline.
+	const sentKey = `rsvp-enviado:${window.location.pathname}:${guestName()}`;
+
+	if (wasSent(sentKey)) {
+		againButton.hidden = isClosed();
+		replaceForm(sentMessage, { keepSize: false });
+	} else if (isClosed()) {
 		closeForm({ keepSize: false });
 	}
+
+	againButton.addEventListener('click', () => {
+		restoreForm();
+		nombreInput.focus();
+	});
 
 	function showSuccess() {
 		replaceForm(successMessage);
@@ -250,6 +279,7 @@ export function initRsvp() {
 
 		try {
 			await send(payload);
+			rememberSent(sentKey);
 			showSuccess();
 		} catch (error) {
 			console.error('RSVP submission failed:', error);
@@ -263,7 +293,7 @@ export function initRsvp() {
 
 // The "Personas" options go from 1 to the passes in a personalized link (?pases=4), or to
 // rsvp.maxGuests from the config without them. A link with passes also says so above the
-// form, and a single place needs no choosing.
+// form, and a single place needs no choosing. Returns whether the link had passes.
 function fillPeople(select, passesNote) {
 	const passes = guestPasses();
 	const max = passes ?? Math.max(1, Number(select.dataset.max) || 1);
@@ -279,5 +309,25 @@ function fillPeople(select, passesNote) {
 	if (passes) {
 		passesNote.textContent = `Pase para ${passes} ${passes === 1 ? 'persona' : 'personas'}`;
 		passesNote.hidden = false;
+	}
+
+	return Boolean(passes);
+}
+
+// Storage can be off or full (private browsing, blocked site data): then the form simply
+// shows as usual.
+function rememberSent(key) {
+	try {
+		window.localStorage.setItem(key, new Date().toISOString());
+	} catch {
+		// Nothing to remember it in
+	}
+}
+
+function wasSent(key) {
+	try {
+		return Boolean(window.localStorage.getItem(key));
+	} catch {
+		return false;
 	}
 }
