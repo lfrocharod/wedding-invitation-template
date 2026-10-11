@@ -79,6 +79,10 @@ export function initRsvp() {
 	const fields = document.getElementById('rsvp-fields');
 	const answers = document.getElementById('rsvp-answers');
 	const successMessage = document.getElementById('rsvp-success');
+	const closedMessage = document.getElementById('rsvp-closed');
+	const deadline = document.getElementById('rsvp-deadline');
+	const intro = form.querySelector('.confirmacion__intro');
+	const passesNote = document.getElementById('rsvp-pases');
 	const errorMessage = document.getElementById('rsvp-error');
 	const submitButton = form.querySelector('.rsvp-form__submit');
 	const nombreInput = document.getElementById('rsvp-nombre');
@@ -87,7 +91,7 @@ export function initRsvp() {
 	const mensajeInput = document.getElementById('rsvp-mensaje');
 	const toggles = form.querySelectorAll('.rsvp-form__toggle');
 
-	fillPeople(personasSelect, document.getElementById('rsvp-pases'));
+	fillPeople(personasSelect, passesNote);
 
 	// The message sits under the submit button in a role="alert" element, so screen
 	// readers announce it. Focus goes to the field that needs fixing, if there is one.
@@ -138,15 +142,36 @@ export function initRsvp() {
 		});
 	});
 
-	// The fields and answers give way to a message inside the frame. The frame's parts keep
-	// their height, so it doesn't shrink and pull the rest of the page up.
-	function replaceForm(message) {
-		form.querySelectorAll('.confirmacion__top, .confirmacion__bottom').forEach((part) => {
-			part.style.minHeight = `${part.offsetHeight}px`;
-		});
+	// The fields and answers give way to a message inside the frame. While the guest is
+	// looking, the frame's parts keep their height, so it doesn't shrink and pull the rest
+	// of the page up.
+	function replaceForm(message, { keepSize = true } = {}) {
+		if (keepSize) {
+			form.querySelectorAll('.confirmacion__top, .confirmacion__bottom').forEach((part) => {
+				part.style.minHeight = `${part.offsetHeight}px`;
+			});
+		}
+
 		fields.hidden = true;
 		answers.hidden = true;
+		deadline.hidden = true;
+		passesNote.hidden = true;
 		message.hidden = false;
+	}
+
+	// After the last day of rsvp.deadline (the end of it at the venue, worked out by the
+	// build plugin), the form closes. NaN without a deadline, which never compares later.
+	const closesAt = Date.parse(deadline.dataset.closes);
+	const isClosed = () => Date.now() > closesAt;
+
+	// The intro asks guests to fill in the form, so it goes too.
+	function closeForm(options) {
+		intro.hidden = true;
+		replaceForm(closedMessage, options);
+	}
+
+	if (isClosed()) {
+		closeForm({ keepSize: false });
 	}
 
 	function showSuccess() {
@@ -163,6 +188,13 @@ export function initRsvp() {
 		// Pretend it worked so the bot has no reason to try again, but send nothing.
 		if (form.elements.website.value) {
 			showSuccess();
+			return;
+		}
+
+		// The page may have stayed open past the deadline.
+		if (isClosed()) {
+			closeForm();
+			closedMessage.focus();
 			return;
 		}
 

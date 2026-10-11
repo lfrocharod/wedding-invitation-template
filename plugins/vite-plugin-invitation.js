@@ -43,12 +43,24 @@ function escapeHtml(value) {
 		.replaceAll("'", '&#39;');
 }
 
+// Date.parse accepts days a month doesn't have (2027-02-30 becomes March 2), so the
+// parts are checked against the date they make.
+function isCalendarDate(year, month, day) {
+	const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+
+	return (
+		date.getUTCFullYear() === Number(year) &&
+		date.getUTCMonth() === Number(month) - 1 &&
+		date.getUTCDate() === Number(day)
+	);
+}
+
 // The parts are read straight from the ISO string, i.e. the calendar date at the
 // venue, so the time zone of the machine running the build can't shift the day.
 function dateParts(iso) {
 	const match = /^(\d{4})-(\d{2})-(\d{2})T/.exec(iso);
 
-	if (!match || Number.isNaN(Date.parse(iso))) {
+	if (!match || Number.isNaN(Date.parse(iso)) || !isCalendarDate(...match.slice(1))) {
 		throw new Error(
 			`[invitation] "date" must be an ISO 8601 date-time such as 2027-05-15T17:00:00-06:00 (got "${iso}").`,
 		);
@@ -98,6 +110,7 @@ function buildContext(config) {
 			initials: { partner1: initial(partner1), partner2: initial(partner2) },
 		},
 		date: dateParts(config.date),
+		rsvp: { ...config.rsvp, ...rsvpDeadline(config) },
 		calendar: {
 			...config.calendar,
 			google: googleCalendarUrl(event),
@@ -105,6 +118,40 @@ function buildContext(config) {
 			ics: `${new URL(site.url).pathname.replace(/\/?$/, '/')}${CALENDAR_FILE}`,
 		},
 		event,
+	};
+}
+
+// The RSVP's last day, rsvp.deadline (YYYY-MM-DD, at the venue), as the text the form
+// shows ("15 de abril") and the moment it closes: the end of that day, in the venue's UTC
+// offset taken from `date`. All three are '' without a deadline.
+function rsvpDeadline(config) {
+	const deadline = config.rsvp?.deadline ?? '';
+
+	if (!deadline) {
+		return { deadline: '', deadlineText: '', closesAt: '' };
+	}
+
+	const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(deadline);
+	const offset = /(Z|[+-]\d{2}:\d{2})$/.exec(config.date)?.[1] ?? '';
+	const closesAt = `${deadline}T23:59:59${offset}`;
+
+	if (!match || Number.isNaN(Date.parse(closesAt)) || !isCalendarDate(...match.slice(1))) {
+		throw new Error(
+			`[invitation] "rsvp.deadline" must be a date such as 2027-04-15, or '' for none (got "${deadline}").`,
+		);
+	}
+
+	if (Date.parse(closesAt) >= Date.parse(config.date)) {
+		throw new Error('[invitation] "rsvp.deadline" must be a day before the wedding.');
+	}
+
+	const [, , month, day] = match;
+
+	return {
+		deadline,
+		// Non-breaking spaces keep "15 de abril" on one line
+		deadlineText: `${Number(day)}\u00a0de\u00a0${MONTHS[Number(month) - 1].toLocaleLowerCase('es')}`,
+		closesAt,
 	};
 }
 

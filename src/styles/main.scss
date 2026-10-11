@@ -585,11 +585,26 @@ body {
 
 	&__intro {
 		margin: 0 0 0.6em;
+		text-wrap: balance;
 		font-family: var(--font-detail);
 		font-size: 5cqw;
 		line-height: 1.45;
 		color: var(--color-sage-dark);
 		text-align: center;
+	}
+
+	&__deadline {
+		margin: -0.2em 0 0.8em;
+		text-wrap: balance;
+		font-family: var(--font-detail);
+		font-size: 4.6cqw;
+		color: var(--color-sage-deep);
+		text-align: center;
+
+		// Without rsvp.deadline the plugin leaves this empty
+		&[data-closes=''] {
+			display: none;
+		}
 	}
 
 	&__pases {
@@ -773,6 +788,7 @@ body {
 	// The confirmation that replaces the fields once the answer is sent
 	&__message {
 		margin: auto 0;
+		text-wrap: balance;
 		font-family: var(--font-script);
 		font-size: 5.5cqw;
 		font-weight: 700;

@@ -352,6 +352,15 @@
 
 						<p class="confirmacion__intro">{{ rsvp.intro }}</p>
 
+						<!-- From rsvp.deadline; not shown without one -->
+						<p
+							class="confirmacion__deadline"
+							id="rsvp-deadline"
+							data-closes="{{ rsvp.closesAt }}"
+						>
+							Por favor confirma a más tardar el {{ rsvp.deadlineText }}.
+						</p>
+
 						<!-- With ?pases=4 in the link: "Pase para 4 personas" -->
 						<p class="confirmacion__pases" id="rsvp-pases" hidden></p>
 
@@ -436,6 +445,11 @@
 
 						<p class="rsvp-form__message" id="rsvp-success" tabindex="-1" hidden>
 							{{ rsvp.success }}
+						</p>
+
+						<!-- Replaces the form once rsvp.deadline has passed -->
+						<p class="rsvp-form__message" id="rsvp-closed" tabindex="-1" hidden>
+							{{ rsvp.closed }}
 						</p>
 					</div>
 
