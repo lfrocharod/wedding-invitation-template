@@ -1,0 +1,691 @@
+// ---- Design tokens ----
+:root {
+	--color-bg: #f2eee2;
+	--color-sage: #8b9c7e;
+	--color-sage-dark: #6b7a5e;
+	--color-text: #4a4238;
+	--font-detail: 'Caveat', cursive;
+	--font-script: 'Caveat', cursive;
+	--font-title: 'Pinyon Script', cursive;
+	--space-sm: 1rem;
+	--space-md: 1.5rem;
+	--space-lg: 2rem;
+	--space-xl: 3.5rem;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background-color: var(--color-bg);
+	background-image:
+		linear-gradient(rgb(242 238 226 / 85%), rgb(242 238 226 / 85%)),
+		url('/assets/images/background.webp');
+	background-repeat: repeat;
+	background-size: 100% auto;
+	background-position: top center;
+	color: var(--color-text);
+	font-family: var(--font-detail);
+	-webkit-font-smoothing: antialiased;
+}
+
+.invitation {
+	max-width: 480px;
+	margin: 0 auto;
+	padding: var(--space-lg) var(--space-md);
+	overflow: hidden;
+	container-type: inline-size;
+}
+
+// ---- Hero ----
+.hero {
+	text-align: center;
+	margin-bottom: var(--space-xl);
+	color: var(--color-sage-dark);
+
+	&__names {
+		margin: 0;
+		font-family: var(--font-title);
+		font-size: 10cqw;
+		font-weight: 400;
+		line-height: 1.2;
+	}
+
+	&__date {
+		margin: 0.25rem 0 0;
+		font-family: var(--font-detail);
+		font-size: 5.5cqw;
+		letter-spacing: 0.04em;
+	}
+}
+
+// ---- Countdown ----
+.countdown {
+	margin-bottom: var(--space-xl);
+	text-align: center;
+
+	&__label {
+		font-family: var(--font-script);
+		font-size: 6cqw;
+		font-weight: 600;
+		color: var(--color-sage-dark);
+		margin: 0 0 0.5rem;
+	}
+
+	&__grid {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	&__unit {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	&__number {
+		font-family: var(--font-detail);
+		font-size: 6.5cqw;
+		color: var(--color-sage-dark);
+		line-height: 1;
+	}
+
+	&__unit-label {
+		font-family: var(--font-detail);
+		font-size: 3cqw;
+		color: var(--color-text);
+		margin-top: 0.25rem;
+	}
+}
+
+// ---- Intro ----
+.intro {
+	position: relative; // establishes the coordinate system for the absolutely positioned text below
+	margin-bottom: var(--space-xl);
+
+	&__row {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between; // spreads photo and icon to opposite edges, since text no longer sits between them
+		gap: 0.4rem;
+	}
+
+	&__photo {
+		width: 33%;
+		flex-shrink: 0;
+
+		img {
+			width: 100%;
+			height: auto;
+			display: block;
+			aspect-ratio: 586 / 612;
+			object-fit: cover; // a photo with another shape gets cropped, not stretched
+		}
+	}
+
+	&__icon {
+		width: auto;
+		max-width: 85px;
+		height: auto;
+		flex-shrink: 0;
+		aspect-ratio: 324 / 450;
+	}
+
+	&__text {
+		position: absolute;
+		top: 35%; // starting point, tune once you see it live
+		left: 25%;
+		width: 68%;
+		margin: 0;
+		font-family: var(--font-script);
+		font-size: 6cqw; // bigger than before, to fill the wider space
+		color: var(--color-sage-dark);
+		text-align: center;
+		line-height: 1.3;
+	}
+}
+
+// ---- Templo ----
+.templo {
+	margin-bottom: var(--space-xl);
+
+	&__frame {
+		position: relative;
+		width: 100%;
+	}
+
+	&__bg {
+		width: 100%;
+		height: auto;
+		display: block;
+		aspect-ratio: 1548 / 816;
+	}
+
+	&__content {
+		position: absolute;
+		inset: 0;
+	}
+
+	&__heading {
+		position: absolute;
+		top: 9%;
+		right: 15%;
+		width: 24%;
+		margin: 0;
+		font-family: var(--font-script);
+		font-size: 10cqw;
+		font-weight: 700;
+		color: var(--color-sage-dark);
+		text-align: center;
+	}
+
+	&__details {
+		position: absolute;
+		top: 36%;
+		right: 8%;
+		width: 34%;
+		margin: 0;
+		font-family: var(--font-detail);
+		font-size: 5cqw;
+		line-height: 1.5;
+		color: var(--color-sage-dark);
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	&__link {
+		position: absolute;
+		top: 66%;
+		left: 68%;
+		width: 18%;
+		font-family: var(--font-detail);
+		font-size: 5cqw;
+		color: var(--color-sage-dark);
+		text-align: left;
+		text-decoration: none;
+	}
+}
+
+// ---- Vámonos ----
+.vamonos {
+	margin-bottom: var(--space-xl);
+
+	&__img {
+		width: 100%;
+		height: auto;
+		display: block;
+		aspect-ratio: 1263 / 718;
+	}
+}
+
+// ---- Recepción ----
+.recepcion {
+	margin-bottom: var(--space-xl);
+
+	&__frame {
+		position: relative;
+		width: 100%;
+	}
+
+	&__bg {
+		width: 100%;
+		height: auto;
+		display: block;
+		aspect-ratio: 1556 / 826;
+	}
+
+	&__content {
+		position: absolute;
+		inset: 0;
+	}
+
+	&__heading {
+		position: absolute;
+		top: 10%;
+		left: 11%;
+		width: 36%;
+		margin: 0;
+		font-family: var(--font-script);
+		font-size: 9.5cqw;
+		font-weight: 700;
+		color: var(--color-sage-dark);
+		text-align: center;
+	}
+
+	&__details {
+		position: absolute;
+		top: 36%;
+		left: 12%;
+		width: 36%;
+		margin: 0;
+		font-family: var(--font-detail);
+		font-size: 5cqw;
+		line-height: 1.5;
+		color: var(--color-sage-dark);
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	&__link {
+		position: absolute;
+		top: 66%;
+		left: 24%;
+		width: 28%;
+		font-family: var(--font-detail);
+		font-size: 5cqw;
+		color: var(--color-sage-dark);
+		text-align: left;
+		text-decoration: none;
+	}
+}
+
+// ---- Dress code ----
+.dresscode {
+	margin-bottom: var(--space-xl);
+
+	&__frame {
+		position: relative;
+		width: 100%;
+	}
+
+	&__bg {
+		width: 100%;
+		height: auto;
+		display: block;
+		aspect-ratio: 1786 / 682;
+	}
+
+	&__content {
+		position: absolute;
+		inset: 0;
+	}
+
+	&__heading {
+		position: absolute;
+		top: 6%;
+		left: 59%;
+		width: 34%;
+		margin: 0;
+		font-family: var(--font-script);
+		font-size: 7.5cqw;
+		font-weight: 700;
+		color: var(--color-sage-dark);
+		text-align: center;
+	}
+
+	&__inspo {
+		position: absolute;
+		top: 35%;
+		left: 58%;
+		width: 16%;
+		margin: 0;
+		font-family: var(--font-detail);
+		font-size: 2.3cqw;
+		color: var(--color-sage-dark);
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	&__link {
+		position: absolute;
+		display: block;
+
+		&--mujer {
+			top: 50%;
+			left: 58.5%;
+			width: 13.5%;
+			height: 22%;
+		}
+
+		&--hombre {
+			top: 76%;
+			left: 58.5%;
+			width: 13.5%;
+			height: 22%;
+		}
+	}
+
+	&__etiqueta {
+		position: absolute;
+		top: 35%;
+		left: 75%;
+		width: 25%;
+		margin: 0;
+		font-family: var(--font-detail);
+		font-size: 2.3cqw;
+		color: var(--color-sage-dark);
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	&__note {
+		position: absolute;
+		top: 50%;
+		left: 80%;
+		width: 15%;
+		margin: 0;
+		font-family: var(--font-detail);
+		font-size: 2.9cqw;
+		line-height: 1.5;
+		color: var(--color-sage-dark);
+		text-align: center;
+	}
+}
+
+// ---- Mesa de Regalos ----
+.regalos {
+	margin-bottom: var(--space-xl);
+
+	&__frame {
+		position: relative;
+		width: 100%;
+	}
+
+	&__bg {
+		width: 100%;
+		height: auto;
+		display: block;
+		aspect-ratio: 1680 / 813;
+	}
+
+	&__content {
+		position: absolute;
+		inset: 0;
+	}
+
+	&__heading {
+		position: absolute;
+		top: -19%;
+		left: 0%;
+		width: 55%;
+		margin: 0;
+		font-family: var(--font-script);
+		font-size: 10cqw; // was 2.5rem
+		font-weight: 700;
+		color: var(--color-sage-dark);
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	&__text {
+		position: absolute;
+		top: 20%;
+		left: 0%;
+		width: 58%;
+		margin: 0;
+		font-family: var(--font-detail);
+		font-size: 3.7cqw;
+		line-height: 1.7;
+		color: var(--color-sage-dark);
+		text-align: center;
+	}
+
+	&__bank {
+		position: absolute;
+		top: 3%;
+		left: 60%;
+		width: 44%;
+		margin: 0;
+		font-family: var(--font-detail);
+		font-size: 3cqw;
+		line-height: 1.8;
+		color: var(--color-sage-dark);
+		text-align: left;
+	}
+}
+
+// ---- Confirmación ----
+.confirmacion {
+	margin-bottom: var(--space-xl);
+
+	&__frame {
+		position: relative;
+		width: 100%;
+	}
+
+	&__bg {
+		width: 100%;
+		height: auto;
+		display: block;
+		aspect-ratio: 1059 / 1264;
+	}
+
+	&__content {
+		position: absolute;
+		inset: 0;
+	}
+
+	&__heading {
+		position: absolute;
+		top: 13%;
+		left: 21%;
+		width: 60%;
+		margin: 0;
+		font-family: var(--font-script);
+		font-size: 7.5cqw;
+		font-weight: 700;
+		color: var(--color-sage-dark);
+		text-align: center;
+	}
+
+	&__intro {
+		position: absolute;
+		top: 25%;
+		left: 15%;
+		width: 72%;
+		margin: 0;
+		font-family: var(--font-detail);
+		font-size: 5cqw;
+		line-height: 1.5;
+		color: var(--color-sage-dark);
+		text-align: center;
+	}
+}
+
+.rsvp-form {
+	&__label {
+		position: absolute;
+		width: 60%;
+		font-family: var(--font-detail);
+		font-size: 3cqw;
+		color: var(--color-text);
+		text-align: center;
+
+		&--nombre {
+			top: 46%;
+			left: 20%;
+		}
+
+		&--telefono {
+			top: 55%;
+			left: 20%;
+		}
+	}
+
+	&__input {
+		position: absolute;
+		width: 50%;
+		padding: 0.3rem 0.5rem;
+		border: 1px solid var(--color-sage);
+		border-radius: 4px;
+		background: transparent;
+		font-family: var(--font-detail);
+		font-size: 2.2cqw;
+		color: var(--color-text);
+		text-align: center;
+
+		&:focus {
+			outline: none;
+			border-color: var(--color-sage-dark);
+		}
+
+		&--nombre {
+			top: 49%;
+			left: 25%;
+		}
+
+		&--telefono {
+			top: 58%;
+			left: 25%;
+		}
+	}
+
+	&__toggle {
+		position: absolute;
+		display: flex;
+		justify-content: center;
+		gap: 0.4rem;
+
+		&--ceremonia {
+			top: 80%;
+			left: 16%;
+			width: 36%;
+		}
+
+		&--recepcion {
+			top: 80%;
+			left: 50%;
+			width: 36%;
+		}
+	}
+
+	&__pill {
+		padding: 0.2rem 0.6rem;
+		border: 1px solid var(--color-sage);
+		border-radius: 999px;
+		background: transparent;
+		font-family: var(--font-detail);
+		font-size: 1.8cqw;
+		color: var(--color-sage-dark);
+		cursor: pointer;
+		transition:
+			background-color 0.15s ease,
+			color 0.15s ease;
+
+		&--active {
+			background-color: var(--color-sage-dark);
+			color: var(--color-bg);
+			border-color: var(--color-sage-dark);
+		}
+	}
+
+	&__note {
+		position: absolute;
+		top: 80%;
+		left: 20%;
+		width: 60%;
+		margin: 0;
+		text-align: center;
+		pointer-events: none;
+
+		.bold {
+			margin: 0;
+			font-family: var(--font-detail);
+			font-weight: 700;
+			font-size: 3cqw;
+			color: var(--color-sage-dark);
+		}
+	}
+
+	&__submit {
+		position: absolute;
+		top: 86%;
+		left: 22%;
+		width: 58%;
+		padding: 0.4rem 0;
+		border: none;
+		border-radius: 999px;
+		background-color: var(--color-sage-dark);
+		color: var(--color-bg);
+		font-family: var(--font-detail);
+		font-size: 3cqw;
+		cursor: pointer;
+
+		&:hover {
+			opacity: 0.9;
+		}
+
+		&:disabled {
+			opacity: 0.7;
+			cursor: progress;
+		}
+	}
+
+	&__success {
+		position: absolute;
+		top: 50%;
+		left: 15%;
+		width: 70%;
+		margin: 0;
+		font-family: var(--font-script);
+		font-size: 5cqw;
+		color: var(--color-sage-dark);
+		text-align: center;
+
+		// Receives focus after submitting so screen readers announce it; not a control
+		&:focus {
+			outline: none;
+		}
+	}
+
+	// Honeypot: moved off-screen rather than display: none, which some bots skip
+	&__trap {
+		position: absolute;
+		left: -10000px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+	}
+}
+
+// ---- Scroll reveal animation ----
+// Opt-in: sections only start hidden when the visitor hasn't asked their OS for
+// reduced motion and JS is running to reveal them (the `js` class on <html>).
+// Otherwise the content is simply there, with nothing to animate.
+@media (prefers-reduced-motion: no-preference) {
+	.js .invitation > section {
+		opacity: 0;
+		transform: translateY(24px);
+		transition:
+			opacity 0.6s ease,
+			transform 0.6s ease;
+
+		&.is-visible {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+}
+
+// ---- Fountain ----
+.fountain {
+	&__img {
+		width: 100%;
+		height: auto;
+		display: block;
+		aspect-ratio: 811 / 1019;
+	}
+}
+
+// ---- Utilities ----
+// Off-screen but still read by screen readers, e.g. the section titles that are
+// drawn into the illustrations. !important so it beats the positioned element styles.
+.visually-hidden {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	padding: 0 !important;
+	margin: -1px !important;
+	overflow: hidden !important;
+	clip-path: inset(50%) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
+}
