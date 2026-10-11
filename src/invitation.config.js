@@ -84,6 +84,9 @@ export default {
 	rsvp: {
 		intro: 'Agradecemos responder este formulario indicando la confirmación o no de su asistencia a los siguientes eventos',
 		note: '¡No niños!',
+		// Most people one answer can be for, the guest included: the "Personas" field goes
+		// from 1 to this. A personalized link can set fewer with &pases= (see README.md).
+		maxGuests: 10,
 		success: '¡Gracias por confirmar! Nos vemos pronto.',
 	},
 
