@@ -63,7 +63,8 @@ export default {
 		details: [
 			'Nombre de Ejemplo',
 			'Banco: Banco de Ejemplo',
-			'CLABE: 000 000 00000000000 0 — ejemplo',
+			'CLABE: 000 000 00000000000 0',
+			'(datos de ejemplo)',
 		],
 	},
 

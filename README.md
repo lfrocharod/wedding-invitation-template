@@ -1,5 +1,7 @@
 # Wedding Invitation Template
 
+[![CI](https://github.com/lfrocharod/wedding-invitation-template/actions/workflows/ci.yml/badge.svg)](https://github.com/lfrocharod/wedding-invitation-template/actions/workflows/ci.yml)
+
 A mobile-first wedding invitation website with scroll animations, a live countdown, an RSVP form and link-preview metadata. All of the content (names, date, venues, dress code, gifts, RSVP texts) lives in one config file and is baked into static HTML at build time.
 
 The site copy is in Spanish; the code and documentation are in English.
@@ -8,11 +10,11 @@ The site copy is in Spanish; the code and documentation are in English.
 
 ## Screenshots
 
-<!-- Add screenshots (for example in docs/screenshots/) and replace the placeholders below. -->
+Phone viewport (390px wide) with the placeholder content.
 
-| Hero and countdown |    Venues    |     RSVP     |
-| :----------------: | :----------: | :----------: |
-|    _screenshot_    | _screenshot_ | _screenshot_ |
+|                                                                    Hero and ceremony                                                                     |                                                             Dress code, gifts and countdown                                                             |                                                          RSVP                                                           |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------: |
+| <img src="docs/screenshots/hero-and-ceremony.jpg" width="260" alt="Header with the couple's names and the date, the welcome text and the ceremony card"> | <img src="docs/screenshots/dress-code-gifts-countdown.jpg" width="260" alt="Dress code panel, gift table with example bank details, and the countdown"> | <img src="docs/screenshots/rsvp.jpg" width="260" alt="RSVP form with name, phone and the Sí/No toggles for each event"> |
 
 ## Features
 
@@ -132,6 +134,7 @@ A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitH
 .
 ├── apps-script/
 │   └── Code.gs                     # RSVP backend (Google Apps Script web app)
+├── docs/screenshots/               # README screenshots
 ├── plugins/
 │   └── vite-plugin-invitation.js   # Injects the config into index.html at build time
 ├── public/                         # Copied as-is: favicon and images
@@ -160,4 +163,4 @@ Illustrations © Pao Lepe, used with permission. Not covered by this repo's lice
 
 ## License
 
-The code is released under the [MIT License](LICENSE). The illustrations in `public/assets/images/`, and the link-preview image made from them, are excluded (see [Credits](#credits)).
+The code is released under the [MIT License](LICENSE). The illustrations in `public/assets/images/`, and the images made from them (the link-preview image and the screenshots in `docs/screenshots/`), are excluded (see [Credits](#credits)).
