@@ -74,4 +74,13 @@ export default {
 		note: '¡No niños!',
 		success: '¡Gracias por confirmar! Nos vemos pronto.',
 	},
+
+	// Background song. It starts when the guest opens the envelope (browsers only allow
+	// sound after a tap) and has no visible player. MP3 plays in every browser.
+	music: {
+		// Add #t=<seconds> to skip a long intro, e.g. '/assets/audio/song.mp3#t=12'.
+		src: '/assets/audio/song.mp3',
+		// From 0 to 1. iPhones ignore it and play at the device volume.
+		volume: 0.7,
+	},
 };

@@ -32,13 +32,117 @@
 		/>
 		<meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
 
-		<!-- Sections are only hidden for the scroll reveal when JS is there to reveal them -->
+		<!-- The envelope and the scroll reveal only hide content when JS is there to reveal it -->
 		<script>
 			document.documentElement.classList.add('js');
 		</script>
 	</head>
 	<body>
-		<main class="invitation">
+		<!--
+			Envelope: covers the invitation until the guest opens it, and that tap is also what
+			lets the music start. It's drawn with the SVG shapes below and colored by the
+			--envelope-* properties in src/styles/_envelope.scss. Without JS it isn't shown.
+		-->
+		<section class="envelope" id="envelope" aria-label="Sobre de la invitación">
+			<p class="envelope__names">{{ couple.names }}</p>
+			<p class="envelope__date">
+				<time datetime="{{ date.iso }}"
+					>{{ date.day }} <span aria-hidden="true">•</span> {{ date.monthShort }}
+					<span aria-hidden="true">•</span> {{ date.year }}</time
+				>
+			</p>
+
+			<div class="envelope__stage">
+				<svg
+					class="envelope__back"
+					viewBox="0 0 280 200"
+					preserveAspectRatio="none"
+					aria-hidden="true"
+				>
+					<defs>
+						<pattern
+							id="envelope-liner"
+							width="12"
+							height="12"
+							patternUnits="userSpaceOnUse"
+							patternTransform="rotate(-25)"
+						>
+							<rect class="envelope__liner" width="12" height="12" />
+							<ellipse class="envelope__liner-dot" cx="6" cy="6" rx="1.7" ry="2.8" />
+						</pattern>
+					</defs>
+					<rect class="envelope__paper" width="280" height="200" />
+					<rect fill="url(#envelope-liner)" x="10" y="8" width="260" height="184" />
+				</svg>
+
+				<div class="envelope__letter" aria-hidden="true">
+					<p class="envelope__letter-text">¡Nos casamos!</p>
+				</div>
+
+				<svg
+					class="envelope__pocket"
+					viewBox="0 0 280 200"
+					preserveAspectRatio="none"
+					aria-hidden="true"
+				>
+					<path class="envelope__side" d="M0 0 L140 108 L280 0 V200 H0 Z" />
+					<path class="envelope__line" d="M0 0 L132 102 Q140 108 148 102 L280 0" />
+					<path
+						class="envelope__bottom"
+						d="M0 200 L126 115 Q140 105 154 115 L280 200 Z"
+					/>
+					<path class="envelope__line" d="M0 200 L126 115 Q140 105 154 115 L280 200" />
+				</svg>
+
+				<!-- A link ending in ?para=Familia%20Pérez writes the guest's name here -->
+				<p class="envelope__guest" id="envelope-guest" hidden>
+					<span class="envelope__guest-label">Para</span>
+					<span class="envelope__guest-name" id="envelope-guest-name"></span>
+				</p>
+
+				<svg
+					class="envelope__flap"
+					viewBox="0 0 280 112"
+					preserveAspectRatio="none"
+					aria-hidden="true"
+				>
+					<g class="envelope__flap-inside">
+						<path class="envelope__paper" d="M0 0 H280 L149 104 Q140 111 131 104 Z" />
+						<path
+							fill="url(#envelope-liner)"
+							d="M14 0 H266 L146 96 Q140 101 134 96 Z"
+						/>
+					</g>
+					<g class="envelope__flap-front">
+						<path class="envelope__paper" d="M0 0 H280 L149 104 Q140 111 131 104 Z" />
+						<path class="envelope__line" d="M0 0 L131 104 Q140 111 149 104 L280 0" />
+					</g>
+				</svg>
+
+				<p class="envelope__seal" aria-hidden="true">
+					{{ couple.initials.partner1 }}<span class="envelope__seal-joiner"
+						>{{ couple.joiner }}</span
+					>{{ couple.initials.partner2 }}
+				</p>
+			</div>
+
+			<button type="button" class="envelope__button" id="envelope-button">
+				Toca para abrir
+			</button>
+		</section>
+
+		<main class="invitation" id="invitation" tabindex="-1">
+			<!--
+				Background music (src and volume in the config). The <audio> has no controls,
+				so there's no visible player. The button is hidden until it gets keyboard
+				focus: it lets keyboard and screen reader users pause a song that would
+				otherwise talk over their screen reader.
+			-->
+			<audio id="music" src="{{ music.src }}" loop preload="auto"></audio>
+			<button type="button" class="music-toggle" id="music-toggle" hidden>
+				Pausar música
+			</button>
+
 			<header class="hero">
 				<h1 class="hero__names">{{ couple.names }}</h1>
 				<p class="hero__date">

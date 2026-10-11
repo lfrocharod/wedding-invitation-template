@@ -1,0 +1,419 @@
+// ---- Envelope ----
+// Covers the invitation until the guest opens it (src/scripts/envelope.js). It's drawn
+// with the SVG shapes in index.html and colored by the custom properties below, so a
+// new palette only means changing them. To use artwork instead, keep the class names
+// (the script and the animations rely on them) and swap the shapes for images.
+
+// Opening it takes two steps: `is-opening` breaks the seal, opens the flap and slides
+// the letter out, then `is-leaving` fades the envelope away. The script waits for each
+// step's animations to end, so their timing only lives in this file.
+
+// While the envelope is closed, the invitation behind it doesn't scroll.
+.js:has(.envelope:not([hidden])) {
+	overflow: hidden;
+}
+
+.envelope {
+	--envelope-ink: var(--color-sage-deep);
+	--envelope-paper: #fbf8f1;
+	--envelope-paper-shade: #efe8da;
+	--envelope-card: #fffdf8;
+	--envelope-line: rgb(107 122 94 / 55%);
+	--envelope-liner: var(--color-sage);
+	--envelope-liner-dot: #7d8e70;
+	--envelope-seal: var(--color-sage-dark);
+	--envelope-seal-light: #8d9e80;
+	--envelope-seal-dark: var(--color-sage-deep);
+
+	// Without JS nothing could open it, so it's only shown when the `js` class is set
+	display: none;
+
+	.js & {
+		position: fixed;
+		inset: 0;
+		z-index: 10;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: var(--space-md);
+		overflow: hidden;
+		background-color: var(--color-bg);
+		background-image:
+			radial-gradient(circle, transparent 40%, rgb(107 122 94 / 14%)),
+			linear-gradient(rgb(242 238 226 / 85%), rgb(242 238 226 / 85%)),
+			url('/assets/images/background.webp');
+		background-position:
+			center,
+			center,
+			top center;
+		background-size:
+			auto,
+			auto,
+			100% auto;
+		color: var(--envelope-ink);
+		text-align: center;
+	}
+
+	&.is-leaving {
+		animation: envelope-fade-out 0.45s ease forwards;
+		pointer-events: none;
+	}
+
+	&__names {
+		margin: 0;
+		font-family: var(--font-title);
+		font-size: clamp(2.5rem, 11vw, 3.5rem);
+		line-height: 1.2;
+	}
+
+	&__date {
+		margin: 0;
+		font-family: var(--font-detail);
+		font-size: clamp(1.25rem, 5.5vw, 1.6rem);
+		letter-spacing: 0.04em;
+	}
+
+	&__names,
+	&__date {
+		.is-opening & {
+			opacity: 0;
+			transition: opacity 0.3s ease;
+		}
+	}
+
+	&__stage {
+		position: relative;
+
+		// As wide as a phone allows, capped on desktop, and short enough for a phone held sideways
+		width: min(88vw, 26rem, (100svh - 14rem) * 1.4);
+		aspect-ratio: 7 / 5;
+		margin: 2.5rem 0 1.5rem;
+		container-type: inline-size;
+		perspective: 32rem;
+	}
+
+	// Layers, back to front: back, letter, pocket, guest name, flap, seal
+	&__back,
+	&__pocket {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	&__back {
+		z-index: 1;
+		box-shadow:
+			0 1.5cqw 5cqw rgb(74 66 56 / 18%),
+			0 0.4cqw 1cqw rgb(74 66 56 / 10%);
+	}
+
+	&__letter {
+		position: absolute;
+		inset: 4% 7%;
+		z-index: 2;
+		padding: 6cqw 5cqw;
+		background-color: var(--envelope-card);
+		box-shadow: 0 0.3cqw 1.2cqw rgb(74 66 56 / 12%);
+
+		// Thin printed border
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 2cqw;
+			border: 1px solid var(--envelope-line);
+		}
+	}
+
+	&__letter-text {
+		margin: 0;
+		font-family: var(--font-title);
+		font-size: 9cqw;
+		line-height: 1.1;
+
+		// Short printed rule under the heading
+		&::after {
+			content: '';
+			display: block;
+			width: 24%;
+			height: 1px;
+			margin: 3cqw auto 0;
+			background-color: var(--envelope-line);
+		}
+	}
+
+	&__pocket {
+		z-index: 3;
+	}
+
+	&__guest {
+		position: absolute;
+		top: 69%;
+		right: 12%;
+		left: 12%;
+		z-index: 4;
+		margin: 0;
+		font-family: var(--font-script);
+		font-size: 6.5cqw;
+		line-height: 1.05;
+		overflow-wrap: anywhere;
+
+		// Set by the script for long names, so they still fit on the envelope
+		&--long {
+			font-size: 5cqw;
+		}
+	}
+
+	&__guest-label {
+		display: block;
+		font-size: 0.65em;
+	}
+
+	&__flap {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 5;
+		width: 100%;
+		height: 56%;
+		overflow: visible;
+		transform-origin: 50% 0;
+		filter: drop-shadow(0 0.5cqw 0.6cqw rgb(74 66 56 / 16%));
+	}
+
+	&__seal {
+		position: absolute;
+		top: 54%;
+		left: 50%;
+		z-index: 6;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 17cqw;
+		aspect-ratio: 1;
+		margin: 0;
+		translate: -50% -50%;
+
+		// Wax is never a perfect circle
+		border-radius: 46% 54% 52% 48% / 53% 47%;
+		background: radial-gradient(
+			circle at 35% 30%,
+			var(--envelope-seal-light),
+			var(--envelope-seal) 55%,
+			var(--envelope-seal-dark)
+		);
+		box-shadow:
+			0 0.5cqw 1cqw rgb(0 0 0 / 22%),
+			inset 0 0 0 1.2cqw rgb(0 0 0 / 6%);
+		color: var(--color-bg);
+		font-family: var(--font-title);
+		font-size: 8cqw;
+		line-height: 1;
+		text-shadow: 0 0.2cqw 0 rgb(0 0 0 / 25%);
+		white-space: nowrap;
+
+		// Pressed rim around the monogram
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 13%;
+			border: 0.4cqw solid rgb(0 0 0 / 14%);
+			border-radius: 50%;
+			box-shadow: 0 0.2cqw 0 rgb(255 255 255 / 12%);
+		}
+	}
+
+	&__seal-joiner {
+		margin: 0 0.02em;
+		font-size: 0.65em;
+	}
+
+	// SVG fills and strokes
+	&__paper {
+		fill: var(--envelope-paper);
+	}
+
+	&__side {
+		fill: var(--envelope-paper-shade);
+	}
+
+	&__bottom {
+		fill: var(--envelope-paper);
+	}
+
+	&__line {
+		fill: none;
+		stroke: var(--envelope-line);
+		stroke-width: 1.2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	&__liner {
+		fill: var(--envelope-liner);
+	}
+
+	&__liner-dot {
+		fill: var(--envelope-liner-dot);
+	}
+
+	&__button {
+		padding: 0.5rem 1rem;
+		border: 0;
+		border-radius: 999px;
+		background: none;
+		color: inherit;
+		font-family: var(--font-script);
+		font-size: clamp(1.4rem, 6vw, 1.75rem);
+		cursor: pointer;
+
+		// Tapping anywhere opens it, not just this label
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: 7;
+		}
+
+		&:focus-visible {
+			outline: 2px solid currentcolor;
+			outline-offset: 2px;
+		}
+
+		.is-opening & {
+			opacity: 0;
+			animation: none;
+			transition: opacity 0.3s ease;
+		}
+	}
+
+	// ---- Motion ----
+	// Only for visitors who haven't asked their OS for reduced motion. For them the
+	// envelope simply fades away (`is-leaving` above).
+	@media (prefers-reduced-motion: no-preference) {
+		&__names {
+			animation: envelope-enter 0.9s ease backwards;
+		}
+
+		&__date {
+			animation: envelope-enter 0.9s 0.15s ease backwards;
+		}
+
+		&__stage {
+			animation: envelope-enter 0.9s 0.3s ease backwards;
+
+			.is-leaving & {
+				animation: envelope-zoom 0.45s ease-in forwards;
+			}
+		}
+
+		&__button {
+			animation:
+				envelope-enter 0.9s 0.6s ease backwards,
+				envelope-hint 2.4s 1.5s ease-in-out infinite;
+		}
+
+		&__seal {
+			.is-opening & {
+				animation: envelope-seal 0.4s ease-in forwards;
+			}
+		}
+
+		// A symmetric easing, so the flap is edge-on exactly halfway through: the moment
+		// it swaps faces and drops behind the letter
+		&__flap {
+			.is-opening & {
+				animation: envelope-flap 0.7s 0.2s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+			}
+		}
+
+		&__flap-front {
+			.is-opening & {
+				animation: envelope-flap-front 0.7s 0.2s forwards;
+			}
+		}
+
+		&__letter {
+			.is-opening & {
+				animation: envelope-letter 0.8s 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+			}
+		}
+	}
+}
+
+@keyframes envelope-enter {
+	from {
+		opacity: 0;
+		translate: 0 1rem;
+	}
+}
+
+@keyframes envelope-hint {
+	50% {
+		opacity: 0.7;
+		scale: 1.06;
+	}
+}
+
+@keyframes envelope-seal {
+	35% {
+		scale: 1.12;
+	}
+
+	100% {
+		opacity: 0;
+		scale: 0.6;
+	}
+}
+
+@keyframes envelope-flap {
+	0% {
+		z-index: 5;
+		transform: rotateX(0deg);
+	}
+
+	50% {
+		z-index: 5;
+	}
+
+	50.01% {
+		z-index: 1;
+	}
+
+	100% {
+		z-index: 1;
+		transform: rotateX(180deg);
+	}
+}
+
+// The flap's outside, shown until it's edge-on; its lined inside is drawn beneath it
+@keyframes envelope-flap-front {
+	50% {
+		opacity: 1;
+	}
+
+	50.01%,
+	100% {
+		opacity: 0;
+	}
+}
+
+@keyframes envelope-letter {
+	to {
+		translate: 0 -48%;
+	}
+}
+
+@keyframes envelope-zoom {
+	to {
+		opacity: 0;
+		scale: 1.2;
+	}
+}
+
+@keyframes envelope-fade-out {
+	to {
+		opacity: 0;
+	}
+}

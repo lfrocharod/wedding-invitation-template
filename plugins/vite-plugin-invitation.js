@@ -61,6 +61,17 @@ function dateParts(iso) {
 	};
 }
 
+// First letter of a name, for the monogram on the envelope's wax seal.
+function initial(name) {
+	const [letter] = String(name ?? '').trim();
+
+	if (!letter) {
+		throw new Error('[invitation] "couple.partner1" and "couple.partner2" need a name.');
+	}
+
+	return letter.toLocaleUpperCase('es');
+}
+
 // Values derived from the config, so index.html can stay free of logic.
 function buildContext(config) {
 	const { partner1, partner2, joiner } = config.couple;
@@ -68,7 +79,11 @@ function buildContext(config) {
 	return {
 		...config,
 		site: { ...config.site, url: config.site.url.replace(/\/+$/, '') },
-		couple: { ...config.couple, names: `${partner1} ${joiner} ${partner2}` },
+		couple: {
+			...config.couple,
+			names: `${partner1} ${joiner} ${partner2}`,
+			initials: { partner1: initial(partner1), partner2: initial(partner2) },
+		},
 		date: dateParts(config.date),
 	};
 }
