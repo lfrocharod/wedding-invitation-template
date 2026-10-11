@@ -78,8 +78,9 @@ test('fails the build on a placeholder the config does not have', () => {
 	assert.throws(() => render('{{ couple.nickname }}'), /couple\.nickname/);
 });
 
-test('fails the build on a date without a time', () => {
+test('fails the build on a date without a time, or a day the month does not have', () => {
 	assert.throws(() => render('', { date: '2027-05-15' }), /ISO 8601/);
+	assert.throws(() => render('', { date: '2027-02-30T17:00:00-06:00' }), /ISO 8601/);
 });
 
 test('fails the build when a partner has no name', () => {
@@ -138,6 +139,23 @@ test('serves the .ics file from the dev server', () => {
 	let passedOn = false;
 	middleware({ url: '/boda/' }, response, () => (passedOn = true));
 	assert.ok(passedOn, 'other requests go on to Vite');
+});
+
+test('turns rsvp.deadline into the text shown and the end of that day at the venue', () => {
+	const html = '<p data-closes="{{ rsvp.closesAt }}">{{ rsvp.deadlineText }}</p>';
+
+	assert.equal(
+		render(html, { rsvp: { deadline: '2027-04-01' } }),
+		'<p data-closes="2027-04-01T23:59:59-06:00">1\u00a0de\u00a0abril</p>',
+	);
+	assert.equal(render(html, { rsvp: { deadline: '' } }), '<p data-closes=""></p>');
+	assert.equal(render(html, { rsvp: {} }), '<p data-closes=""></p>');
+});
+
+test('fails the build on an RSVP deadline that is not a date before the wedding', () => {
+	assert.throws(() => render('', { rsvp: { deadline: '15/04/2027' } }), /rsvp\.deadline/);
+	assert.throws(() => render('', { rsvp: { deadline: '2027-02-30' } }), /rsvp\.deadline/);
+	assert.throws(() => render('', { rsvp: { deadline: '2027-05-15' } }), /before the wedding/);
 });
 
 test('fails the build without calendar.hours', () => {

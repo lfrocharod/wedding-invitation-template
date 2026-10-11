@@ -87,6 +87,10 @@ export default {
 		// Most people one answer can be for, the guest included: the "Personas" field goes
 		// from 1 to this. A personalized link can set fewer with &pases= (see README.md).
 		maxGuests: 10,
+		// Last day to answer (YYYY-MM-DD, at the venue). The form shows it, and after that
+		// day it's replaced by the `closed` message. '' for no deadline.
+		deadline: '2027-04-15',
+		closed: 'El plazo para confirmar ya terminó. Si necesitas cambiar tu respuesta, escríbenos.',
 		success: '¡Gracias por confirmar! Nos vemos pronto.',
 	},
 
