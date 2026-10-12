@@ -1,6 +1,6 @@
 {
 	"name": "wedding-invitation-template",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "Mobile-first wedding invitation website with an envelope intro, background music, scroll animations, a countdown, an RSVP form and link-preview metadata, configured from a single file.",
 	"private": true,
 	"license": "MIT",
