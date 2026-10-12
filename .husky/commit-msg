@@ -1,0 +1,13 @@
+# Commit subjects follow Conventional Commits, as in CONTRIBUTING.md; CI checks them too.
+subject=$(sed -e '/^#/d' -e '/^[[:space:]]*$/d' "$1" | head -n 1)
+
+case "$subject" in
+	# Merges, and the fixups that `git rebase --autosquash` folds away
+	'Merge '* | 'fixup! '* | 'squash! '* | 'amend! '*) exit 0 ;;
+esac
+
+if ! printf '%s\n' "$subject" | grep -qE '^(feat|fix|perf|refactor|docs|test|build|ci|chore|revert|style)(\([a-z0-9-]+\))?!?: [^ ]'; then
+	echo "Commit subjects look like 'fix(rsvp): what changed' (see CONTRIBUTING.md)." >&2
+	echo "This one is: $subject" >&2
+	exit 1
+fi
