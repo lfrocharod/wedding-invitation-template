@@ -26,6 +26,13 @@ export default [
 		},
 	},
 	{
+		// End-to-end tests run in Node, with callbacks that run in the page
+		files: ['e2e/**/*.js'],
+		languageOptions: {
+			globals: { ...globals.node, ...globals.browser },
+		},
+	},
+	{
 		// Google Apps Script runs .gs files as classic scripts with its own services as globals
 		files: ['apps-script/**/*.gs'],
 		languageOptions: {
