@@ -8,6 +8,12 @@ The site copy is in Spanish; the code and documentation are in English.
 
 **Live demo:** [lfrocharod.github.io/wedding-invitation-template](https://lfrocharod.github.io/wedding-invitation-template/)
 
+## Engineering highlights
+
+- **A build-time Vite plugin** ([`plugins/vite-plugin-invitation.js`](plugins/vite-plugin-invitation.js)) bakes the config into static HTML, so WhatsApp's link previews work without JavaScript. It fails the build on a placeholder with no value, writes the calendar file, and has its own unit tests.
+- **End-to-end tests in Chromium and WebKit:** on every push, Playwright opens the built site on an Android (Chromium) and an iPhone (WebKit, Safari's engine) profile and checks the envelope, the music, personalized links, the RSVP, and the page without JavaScript or with reduced motion. `main` deploys only when they pass.
+- **Accessibility:** WCAG AA text contrast, real headings and labelled controls for screen readers, an envelope that opens from the keyboard and moves focus to the invitation, and a reduced-motion mode.
+
 ## Screenshots
 
 Phone viewport (390px wide) with the placeholder content.
