@@ -36,7 +36,7 @@ Phone viewport (390px wide) with the placeholder content.
 - **One config file:** `src/invitation.config.js`. A placeholder without a matching value fails the build instead of shipping `{{ … }}` to guests.
 - **Accessible:** text colors at the WCAG AA contrast ratio (4.5:1) or better, a real `<h1>` and section headings for screen readers (the visible titles are drawn into the artwork), labelled form controls and toggle groups, the invitation kept out of reach (`inert`) behind the closed envelope, focus moved to the invitation once it opens and to the confirmation message after sending, and `autocomplete` hints.
 - **Lightweight:** no framework, about 10 KB of JavaScript (4 KB gzipped), the two fonts in about 110 KB, illustrations compressed to 256-color lossless WebP (the image folder went from 3.4 MB to about 0.8 MB) and a 0.8 MB demo song.
-- **Tooling:** ESLint, Stylelint, Prettier, unit tests for the build plugin and the Apps Script backend on Node's built-in test runner, end-to-end tests with Playwright in phone-sized Chromium and WebKit (Safari's engine), a Husky + lint-staged pre-commit hook and GitHub Actions CI that deploys `main` to GitHub Pages.
+- **Tooling:** ESLint, Stylelint, Prettier, unit tests for the build plugin and the Apps Script backend on Node's built-in test runner, end-to-end tests with Playwright in phone-sized Chromium and WebKit (Safari's engine), Husky hooks that lint and format the staged files and check that commit subjects follow Conventional Commits, and GitHub Actions CI that deploys `main` to GitHub Pages.
 
 ## Quick start
 
@@ -230,7 +230,7 @@ The form has a hidden `website` field. People never see it, but bots that fill i
 | `npm run format`       | Format all files with Prettier               |
 | `npm run format:check` | Check formatting without writing             |
 
-A pre-commit hook (Husky + lint-staged) lints and formats the staged files. GitHub Actions runs ESLint, Stylelint, the Prettier check, the unit tests, the production build and the end-to-end tests on every push and pull request, and deploys `main` to GitHub Pages once they pass.
+A pre-commit hook (Husky + lint-staged) lints and formats the staged files, and a commit-msg hook checks that the subject follows [Conventional Commits](CONTRIBUTING.md#commit-messages). GitHub Actions checks the commit subjects too, and runs ESLint, Stylelint, the Prettier check, the unit tests, the production build and the end-to-end tests on every push and pull request, and deploys `main` to GitHub Pages once they pass.
 
 The end-to-end tests (`e2e/`) open the built site as a guest would, on an Android-sized Chromium and an iPhone-sized WebKit: the envelope, the music, personalized links, the RSVP from its error messages to the "already answered" note, the deadline, the calendar file, and the page without JavaScript or with reduced motion. They also check that the page loads nothing from other sites. The first run needs the browsers: `npx playwright install chromium webkit` (on Linux, add `--with-deps` for the system libraries).
 

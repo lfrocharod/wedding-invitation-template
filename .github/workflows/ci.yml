@@ -13,6 +13,40 @@ concurrency:
     cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+    commits:
+        name: Commit subjects
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+
+            - name: Conventional Commits
+              env:
+                  BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+                  HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+                  TITLE: ${{ github.event.pull_request.title }}
+              run: |
+                  # type(scope)!: summary, as in CONTRIBUTING.md. A pull request's title too,
+                  # since squash-merging makes it the commit subject on main.
+                  pattern='(feat|fix|perf|refactor|docs|test|build|ci|chore|revert|style)(\([a-z0-9-]+\))?!?: [^ ]'
+                  if git cat-file -e "$BASE^{commit}" 2>/dev/null && git merge-base --is-ancestor "$BASE" "$HEAD"; then
+                      range="$BASE..$HEAD"
+                  else
+                      range="$HEAD~1..$HEAD" # a new branch or a rewritten history: check the tip
+                  fi
+                  bad=$(git log --no-merges --format='%h %s' "$range" | grep -vE "^[0-9a-f]+ $pattern" || true)
+                  if [ -n "$TITLE" ] && ! printf '%s' "$TITLE" | grep -qE "^$pattern"; then
+                      bad="${bad}${bad:+$'\n'}pull request title: $TITLE"
+                  fi
+                  if [ -n "$bad" ]; then
+                      echo "::error::Subjects must look like 'fix(rsvp): what changed'. See CONTRIBUTING.md."
+                      echo "$bad"
+                      exit 1
+                  fi
+                  echo "commit subjects ok ($range)"
+
     check:
         name: Lint, test and build
         runs-on: ubuntu-latest
